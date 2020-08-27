@@ -1,0 +1,94 @@
+service: task-list-service
+frameworkVersion: ">=1.30.0"
+plugins:
+  - serverless-offline
+  - serverless-domain-manager
+  - serverless-dotenv-plugin
+custom:
+  region: ${env:TARGET_REGION}
+  accountid: ${env:AWS_ACCOUNT_ID}
+  domain: ${env:TASK_LIST_DOMAIN}
+#  userPoolArn: ${env:TASK_LIST_USER_POOL_ARN}
+  dotenv:
+    path: ../.env
+  customDomain:
+    domainName: 'tasklistapi.${self:custom.domain}'
+    stage: ${self:provider.stage}
+    basePath: api
+    certificateName: '*.${self:custom.domain}'
+    createRoute53Record: true
+    endpointType: regional
+  serverless-offline:
+    port: 3000
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  stage: ${opt:stage, 'dev'}
+  region: ${env:TARGET_REGION}
+  environment:
+    TASK_TABLE: '${env:TASK_LIST_TASK_TABLE}-${self:provider.stage}'
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:DescribeTable
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:${self:custom.region}:${self:custom.accountid}:*"
+
+functions:
+  create:
+    handler: handler.create
+    role: arn:aws:iam::${self:custom.accountid}:role/task-list
+    events:
+      - http:
+          method: POST
+          path: task
+          cors: true
+#          authorizer:
+#            arn: '${self:custom.userPoolArn}'
+  read:
+    handler: handler.read
+    role: arn:aws:iam::${self:custom.accountid}:role/task-list
+    events:
+      - http:
+          method: GET
+          path: task/{id}
+          cors: true
+#          authorizer:
+#            arn: '${self:custom.userPoolArn}'
+  update:
+    handler: handler.update
+    role: arn:aws:iam::${self:custom.accountid}:role/task-list
+    events:
+      - http:
+          method: PUT
+          path: task/{id}
+          cors: true
+#          authorizer:
+#            arn: '${self:custom.userPoolArn}'
+  delete:
+    handler: handler.del
+    role: arn:aws:iam::${self:custom.accountid}:role/task-list
+    events:
+      - http:
+          method: DELETE
+          path: task/{id}
+          cors: true
+#          authorizer:
+#            arn: '${self:custom.userPoolArn}'
+  list:
+    handler: handler.list
+    role: arn:aws:iam::${self:custom.accountid}:role/task-list
+    events:
+      - http:
+          method: GET
+          path: task
+          cors: true
+#          authorizer:
+#            arn: '${self:custom.userPoolArn}'
+

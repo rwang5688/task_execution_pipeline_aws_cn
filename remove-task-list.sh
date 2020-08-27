@@ -32,5 +32,5 @@ remove
 domain
 
 # delete user pool domain
-. ./cognito.sh teardown
+#. ./cognito.sh teardown
 
