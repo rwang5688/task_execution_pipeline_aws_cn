@@ -55,7 +55,7 @@ function domain () {
 # Given Cognito domain name base and user pool id:
 # create user pool domain.
 # set user pool registration and sign-in pages.
-. ./cognito.sh setup
+#. ./cognito.sh setup
 
 # create task-list-service API domain
 domain
