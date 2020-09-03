@@ -33,5 +33,5 @@ Resources:
             Principal: "*"
             Action:
               - s3:GetObject
-            Resource: arn:aws:s3:::${self:custom.appsBucket}/*
+            Resource: arn:aws-cn:s3:::${self:custom.appsBucket}/*
 
