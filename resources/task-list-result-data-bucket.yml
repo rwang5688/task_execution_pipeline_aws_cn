@@ -1,8 +1,8 @@
 Resources:
-  SourceDataBucket:
+  ResultDataBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: ${self:custom.sourceDataBucket}
+      BucketName: ${self:custom.resultDataBucket}
       CorsConfiguration:
         CorsRules:
           -
@@ -18,11 +18,11 @@ Resources:
               - HEAD
             MaxAge: 3000
       AccessControl: PublicRead
-  SourceDataBucketPolicy:
+  LogDataBucketPolicy:
     Type: AWS::S3::BucketPolicy
     Properties:
       Bucket:
-        Ref: SourceDataBucket
+        Ref: ResultDataBucket
       PolicyDocument:
         Statement:
           - Sid: PublicReadGetObject

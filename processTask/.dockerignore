@@ -56,7 +56,8 @@ cover/
 *.pot
 
 # Django stuff:
-*.log
+#  Comment out *.log for now to accomodate mock .scan_log files
+#*.log
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
@@ -137,8 +138,11 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 
-# processJob: executables, outputs
-xvsa
-xvsa.exe
+# processTask: executables, outputs
+xvsa_scan
+xvsa_scan.exe
+*.tar
 *.tar.gz
-source
+*.preprocess
+fileinfo.json
+

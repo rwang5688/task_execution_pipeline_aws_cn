@@ -26,8 +26,7 @@ def preamble(event, context):
 
 
 def parse_event_record(event_record):
-    global task_tool
-    global task_source
+    global task
     global submitter_id
     global submit_timestamp
 
@@ -39,16 +38,6 @@ def parse_event_record(event_record):
     task = event_body['task']
     if task is None:
         print('parse_event: task is missing.')
-        return False
-
-    task_tool = task['task_tool']
-    if task_tool is None:
-        print('parse_message: task tool is missing.')
-        return False
-
-    task_source = task['task_source']
-    if task_source is None:
-        print('parse_message: task source is missing.')
         return False
 
     event_attributes = event_record['attributes']
@@ -70,7 +59,7 @@ def parse_event_record(event_record):
     return True
 
 
-def send_message(queue_name, item):
+def send_message(queue_name, task):
     # get queue url
     sqsutil.list_queues()
     queue_url = sqsutil.get_queue_url(queue_name)
@@ -81,11 +70,7 @@ def send_message(queue_name, item):
     # send message
     message_body = {
         "action": "process",
-        "task": {
-            "task_id": item['task_id'],
-            "task_tool": item['task_tool'],
-            "task_source": item['task_source']
-        }
+        "task": task
     }
     message_id = sqsutil.send_message(queue_url, str(message_body))
     print(f'MessageId: {message_id}')
@@ -129,45 +114,43 @@ def createTask(event, context):
             print('parse_event_record failed.  Next.')
             continue
 
-        # debug: print task record attributes
-        print('Task record attributes:')
-        print(f'task_tool: {task_tool}')
-        print(f'task_source: {task_source}')
+        # debug: print event record attributes
+        print('Event record attributes:')
+        print(f'task: {task}')
         print(f'submitter_id: {submitter_id}')
         print(f'submit_timestamp: {submit_timestamp}')
 
         # create task record
-        task_id = tasktable.create_task_record(task_table, task_tool, task_source, submitter_id, submit_timestamp)
+        task_id = tasktable.create_task_record(task_table, task, submitter_id, submit_timestamp)
         if task_id is None:
             print('create_task_record failed.  Next.')
             continue
 
-        # debug: get and print task record
-        item = tasktable.get_task_record(task_table, task_id)
-        if item is None:
+        # get and print task record
+        task_record = tasktable.get_task_record(task_table, task_id)
+        if task_record is None:
             print('get_task_record failed.  Next.')
             continue
         print('Task record:')
-        print(item)
+        print(task_record)
 
         # set process task queue name
         queue_name = ''
         if 'PROCESS_TASK_QUEUE' in os.environ:
             queue_name = os.environ['PROCESS_TASK_QUEUE']
 
-        # send task context to process task queue
-        success = send_message(queue_name, item)
+        # send task record to process task queue
+        success = send_message(queue_name, task_record)
         if not success:
             print('send_message failed.  Next.')
             continue
 
-        # TO DO:
-        # Start ECS task to process task!!!
+        # TO DO: Start ECS Fargate task to process task!!!
+        # It appears that ECS Fargate task will start as soon as process queue has message.
 
-        # update task status
+        # if send_message succeeds, update task status to "started"
         task_status = "started"
-        task_logfile = ""
-        success = tasktable.update_task_status(task_table, task_id, task_status, task_logfile)
+        success = tasktable.update_task_status(task_table, task_id, task_status)
         if not success:
             print('update_task_status failed.  Next.')
             continue
