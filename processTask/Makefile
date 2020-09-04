@@ -1,8 +1,9 @@
-all: xvsa
+all: bin/xvsa_scan
 
 clean:
-	rm -f xvsa
+	rm -f bin/xvsa_scan
 
-xvsa: xvsa.cpp
-	g++ -o xvsa xvsa.cpp
+bin/xvsa_scan: xvsa_scan.cpp
+	g++ -o xvsa_scan xvsa_scan.cpp
+	mv xvsa_scan bin
 
