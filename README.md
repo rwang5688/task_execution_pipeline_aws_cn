@@ -1,2 +1,2 @@
-# task-list-aws-xcalibyte-com-cn
-Task list application on AWS for Xcalibyte.com.cn.
+# task-list-aws-cn
+Task list application for processing various static analysis tasks running on AWS-CN.
