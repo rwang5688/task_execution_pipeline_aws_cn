@@ -142,3 +142,7 @@ node_modules
 
 # Serverless Framework
 .serverless
+
+# IDE artifact
+.vscode
+.idea
