@@ -147,3 +147,7 @@ xvsa_scan.exe
 *.preprocess
 fileinfo.json
 
+# IDE artifact
+.vscode
+.idea
+
