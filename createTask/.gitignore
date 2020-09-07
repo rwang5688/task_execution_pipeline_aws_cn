@@ -137,12 +137,13 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 
+# IDE artifact
+.vscode
+.idea
+
 # Node modules
 node_modules
 
 # Serverless Framework
 .serverless
 
-# IDE artifact
-.vscode
-.idea
