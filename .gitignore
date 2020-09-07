@@ -1,2 +1,6 @@
 # AWS CLI V2 credentials
 aws-admin_credentials.csv
+
+# IDE artifact
+.vscode
+.idea
