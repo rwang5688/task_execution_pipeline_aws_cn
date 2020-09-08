@@ -1,8 +1,8 @@
 #!/bin/bash
 # AWS specific environment variables
-export AWS_ACCOUNT_ID=700702834148
-export TARGET_CLOUD=aws
-export TARGET_REGION=us-west-2
+export AWS_ACCOUNT_ID=200691530094
+export TARGET_CLOUD=aws-cn
+export TARGET_REGION=cn-northwest-1
 
 # task-list workflow and database specific environment variables
 export TASK_LIST_PREPROCESS_DATA_BUCKET=task-list-preprocess-data-bucket-xcalibyte-com-cn
