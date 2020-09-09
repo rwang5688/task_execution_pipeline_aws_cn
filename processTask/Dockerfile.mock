@@ -16,7 +16,7 @@ RUN ./aws/install
 
 # install scan engine and add it to executable path
 ENV ENGINE_PATH="/xcal/app/xvsa"
-RUN mkdir -p $ENGINE_PATH
+RUN mkdir -p ${ENGINE_PATH}/bin
 COPY ./xvsa $ENGINE_PATH
 ENV PATH=$PATH:${ENGINE_PATH}/bin
 
