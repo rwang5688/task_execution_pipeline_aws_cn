@@ -20,9 +20,12 @@ RUN mkdir -p $ENGINE_PATH
 COPY ./xvsa $ENGINE_PATH
 ENV PATH=$PATH:${ENGINE_PATH}/bin
 
-# create working directory
-COPY env.sh processTask.py processTask.sh s3util.py sqsutil.py taskResult.py aws-admin_credentials.csv /processTask/
-COPY ./bin /processTask/bin
+# compile XVSA mock
+WORKDIR $ENGINE_PATH
+RUN make
+
+# create working directory ... add scripts and XVSA mock data
+ADD . /processTask
 ENV PATH=$PATH:/processTask/bin
 WORKDIR /processTask
 
@@ -30,5 +33,6 @@ WORKDIR /processTask
 RUN aws configure import --csv "file://aws-admin_credentials.csv"
 RUN cat ~/.aws/credentials
 
-CMD ["/bin/sh", "processTask.sh"]
+# set entry point
+ENTRYPOINT ["/bin/sh", "processTask.sh"]
 

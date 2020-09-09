@@ -1,6 +1,11 @@
-# AWS CLI V2 credentials
-aws-admin_credentials.csv
-
 # IDE artifact
 .vscode
 .idea
+
+# AWS CLI V2 credentials
+aws-admin_credentials.csv
+
+# backup env files
+.env-cn*
+*env-us*
+
