@@ -1,2 +1,3 @@
-# task-list-aws-cn
-Task list application for processing various static analysis tasks running on AWS-CN.
+# task-execution-pipeline-aws-cn
+Task Execution Pipeline for processing various static analysis tasks running on AWS-CN.
+
