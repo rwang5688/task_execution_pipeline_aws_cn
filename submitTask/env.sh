@@ -13,5 +13,6 @@ export TASK_EXEC_PROCESS_TASK_QUEUE=task-exec-process-task-queue-xcalibyte-com-c
 export TASK_EXEC_UPDATE_TASK_QUEUE=task-exec-update-task-queue-xcalibyte-com-cn
 export TASK_EXEC_UPLOAD_TASK_ISSUES_QUEUE=task-exec-upload-task-issues-queue-xcalibyte-com-cn
 export TASK_EXEC_TASK_TABLE=task-exec-task-table-xcalibyte-com-cn
+export TASK_EXEC_FILE_TABLE=task-exec-file-table-xcalibyte-com-cn
 export TASK_EXEC_ISSUE_TABLE=task-exec-issue-table-xcalibyte-com-cn
 
