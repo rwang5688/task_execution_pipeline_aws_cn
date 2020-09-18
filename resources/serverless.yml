@@ -9,7 +9,8 @@ custom:
   preprocessDataBucket: ${env:TASK_EXEC_PREPROCESS_DATA_BUCKET}
   logDataBucket: ${env:TASK_EXEC_LOG_DATA_BUCKET}
   resultDataBucket: ${env:TASK_EXEC_RESULT_DATA_BUCKET}
-  submitTaskQueue: ${env:TASK_EXEC_SUBMIT_TASK_QUEUE}
+  createTaskQueue: ${env:TASK_EXEC_CREATE_TASK_QUEUE}
+  writeTaskFilesQueue: ${env:TASK_EXEC_WRITE_TASK_FILES_QUEUE}
   processTaskQueue: ${env:TASK_EXEC_PROCESS_TASK_QUEUE}
   updateTaskQueue: ${env:TASK_EXEC_UPDATE_TASK_QUEUE}
   uploadTaskIssuesQueue: ${env:TASK_EXEC_UPLOAD_TASK_ISSUES_QUEUE}
