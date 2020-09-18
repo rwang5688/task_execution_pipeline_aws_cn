@@ -52,7 +52,7 @@ def send_message(queue_name, task):
 
     # send message
     message_body = {
-        "action": "update_log_stream",
+        "action": "upload",
         "task": task
     }
     message_id = sqsutil.send_message(queue_url, str(message_body))
@@ -119,8 +119,8 @@ def updateTask(event, context):
 
         # set update task log stream queue name
         queue_name = ''
-        if 'UPDATE_TASK_LOG_STREAM_QUEUE' in os.environ:
-            queue_name = os.environ['UPDATE_TASK_LOG_STREAM_QUEUE']
+        if 'UPDATE_TASK_ISSUES_QUEUE' in os.environ:
+            queue_name = os.environ['UPDATE_TASK_ISSUES_QUEUE']
 
         # send task context to update task log stream queue
         success = send_message(queue_name, task_record)
