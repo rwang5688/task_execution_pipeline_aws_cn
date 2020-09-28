@@ -103,22 +103,3 @@ def upload_task_file(bucket_name, task, task_file_attribute_name):
     # success
     return True
 
-
-def upload_file_from_slash_tmp(bucket_name, user_id, task_id, file_name):
-    # get bucket
-    bucket = s3util.get_bucket(bucket_name)
-    if bucket is None:
-        print(f'upload_file: Bucket {bucket_name} does not exist.')
-        return False
-
-    # upload file
-    slash_tmp_file_name = '/tmp/' + file_name
-    object_key = user_id + "/" + task_id + "/" + file_name
-    success = s3util.upload_file(slash_tmp_file_name, bucket["Name"], object_key)
-    if not success:
-        print(f'upload_file_from_slash_tmp: Failed to upload object {object_key}.')
-        return False
-
-    # success
-    return True
-
