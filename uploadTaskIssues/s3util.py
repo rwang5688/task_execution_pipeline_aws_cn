@@ -80,3 +80,13 @@ def download_file(bucket_name, object_name, file_name=None):
         return False
     return True
 
+
+def get_file(bucket_name, object_name):
+    s3 = get_s3_client()
+    try:
+        file_object = s3.get_file(bucket_name, object_name)
+    except ClientError as e:
+        logging.error(e)
+        return None
+    return file_object
+
