@@ -145,32 +145,6 @@ def write_task_issues(task, scan_result_tar_content, slash_tmp_csv_file_name, is
     return True
 
 
-def upload_file_from_slash_tmp(bucket_name, user_id, task_id, file_name):
-    # get bucket
-    s3util.list_buckets()
-    bucket = s3util.get_bucket(bucket_name)
-    if bucket is None:
-        print(f'upload_file: Bucket {bucket_name} does not exist.')
-        return False
-
-    # debug: list files before
-    s3util.list_files(bucket["Name"])
-
-    # upload file
-    slash_tmp_file_name = '/tmp/' + file_name
-    object_key = user_id + "/" + task_id + "/" + file_name
-    success = s3util.upload_file(slash_tmp_file_name, bucket["Name"], object_key)
-    if not success:
-        print(f'upload_file: Failed to upload object {object_key}.')
-        return False
-
-    # debug: list files after
-    s3util.list_files(bucket["Name"])
-
-    # success
-    return True
-
-
 # uploadTaskIssues handler
 def uploadTaskIssues(event, context):
     success = preamble(event, context)
@@ -214,7 +188,7 @@ def uploadTaskIssues(event, context):
         # get scan result tar blob in memory (max 3 GB)
         task_file_attribute_name = 'task_scan_result_tar'
         task[task_file_attribute_name] = 'scan_result.tar.gz'
-        scan_result_tar_blob = taskfile.get_task_file_blob(result_data_bucket_name, task, task_file_attribute_name)
+        scan_result_tar_blob = taskfile.get_task_file_blob(result_bucket_name, task, task_file_attribute_name)
         if scan_result_tar_blob is None:
             print('get_task_file_blob failed.  Next.')
             continue
@@ -236,9 +210,9 @@ def uploadTaskIssues(event, context):
             continue
 
         # upload /tmp/$(task_id)_issues.csv to result data bucket
-        success = upload_file_from_slash_tmp(result_data_bucket_name, user_id, task_id, csv_file_name)
+        success = taskfile.upload_file_from_slash_tmp(result_bucket_name, user_id, task_id, csv_file_name)
         if not success:
-            print(f'upload_file failed: {csv_file_name}.  Next.')
+            print(f'upload_file_from_slash_tmp failed: {csv_file_name}.  Next.')
             continue
 
         # send task context to update task log stream queue
