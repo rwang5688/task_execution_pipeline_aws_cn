@@ -5,15 +5,9 @@ import boto3
 from botocore.exceptions import ClientError
 from aws_xray_sdk.core import xray_recorder
 from aws_xray_sdk.core import patch_all
-import tarfile
-from io import BytesIO
-from io import StringIO
-import json
 import taskfile
+import taskissue
 import taskmessage
-import dotvfile
-import csvfile
-import issuetable
 
 
 logger = logging.getLogger()
@@ -73,78 +67,6 @@ def parse_event_record(event_record):
     return True
 
 
-def write_issue_record(issue_table, issue):
-    # create issue record
-    issue_record = issuetable.create_issue_record(issue_table, issue)
-    if issue_record is None:
-        print('write_issue_record: create_issue_record failed.')
-        return False
-
-    # debug: get and print issue record
-    task_id = issue_record['task_id']
-    task_issue_number = issue_record['task_issue_number']
-    issue_record = issuetable.get_issue_record(issue_table, task_id, task_issue_number)
-    if issue_record is None:
-        print('write_issue_record: get_issue_record failed.')
-        return False
-
-    print('Issue record:')
-    print(issue_record)
-
-    return True
-
-
-def write_task_issues(task, scan_result_tar_content, slash_tmp_csv_file_name, issue_table):
-    # initialize task_id and task issue number
-    task_id = task['task_id']
-    task_issue_number = 1
-    print(f'write_task_issues: Starting task issue number is {task_issue_number}.')
-
-    # foreach dot v file, decode and write task issues to csv file and issue table
-    with tarfile.open(fileobj = BytesIO(scan_result_tar_content)) as tar:
-        for tar_resource in tar:
-            if (tar_resource.isfile()):
-                # extract dot v file blob from tar resource
-                dot_v_file_bytes = tar.extractfile(tar_resource).read()
-                if dot_v_file_bytes is None:
-                    print('write_task_issues: Empty .v file.  Next.')
-                    continue
-
-                # load convert dot v file blob to a json object
-                dot_v_file_json = json.loads(dot_v_file_bytes)
-                if dot_v_file_json is None:
-                    print('write_task_issues: Null JSON object.  Next.')
-                    continue
-
-                # decode dot v file issues
-                task_issues = dotvfile.decode_dot_v_file_issues(task_id, task_issue_number, dot_v_file_json)
-                if task_issues is None:
-                    print('write_task_issues: decode_dot_v_file_issues failed.  Next.')
-                    continue
-
-                # write to csv file
-                success = csvfile.append_task_issues_csv_rows(slash_tmp_csv_file_name, task_issues)
-                if not success:
-                    print('write_task_issues: append_task_issues_csv_rows failed.  Next.')
-                    continue
-
-                # write to issue table
-                for task_issue in task_issues:
-                    success = write_issue_record(issue_table, task_issue)
-                    if not success:
-                        print('write_task_issues: write_issue_record failed.  Next.')
-                        continue
-
-                # success: update task issue number
-                num_task_issues = len(task_issues)
-                task_issue_number += num_task_issues
-                print(f'write_task_issues: Wrote {num_task_issues} issues.')
-                print(f'write_task_issues: Next task issue number is {task_issue_number}.')
-
-    # success
-    return True
-
-
 # uploadTaskIssues handler
 def uploadTaskIssues(event, context):
     success = preamble(event, context)
@@ -163,7 +85,7 @@ def uploadTaskIssues(event, context):
     print(f'generate_task_summary_queue_name: {generate_task_summary_queue_name}')
 
     # get issue table
-    issue_table = issuetable.get_issue_table()
+    issue_table = taskissue.get_issue_table()
     if issue_table is None:
         print('get_issue_table failed.  Exit.')
         return False
@@ -193,26 +115,10 @@ def uploadTaskIssues(event, context):
             print('get_task_file_blob failed.  Next.')
             continue
 
-        # write /tmp/$(task_id)_issues.csv file header
-        user_id = task['user_id']
-        task_id = task['task_id']
-        csv_file_name = task_id + '_issues.csv'
-        slash_tmp_csv_file_name = '/tmp/' + csv_file_name
-        success = csvfile.write_task_issues_csv_header(slash_tmp_csv_file_name)
-        if not success:
-            print('write_task_issues: write_task_issues_csv_header failed.  Exit.')
-            continue
-
         # extract dot v files and write task issues
-        success = write_task_issues(task, scan_result_tar_blob, slash_tmp_csv_file_name, issue_table)
+        success = taskissue.write_task_issues(issue_table, result_bucket_name, task, scan_result_tar_blob)
         if not success:
             print('write_task_issues failed.  Next.')
-            continue
-
-        # upload /tmp/$(task_id)_issues.csv to result data bucket
-        success = taskfile.upload_file_from_slash_tmp(result_bucket_name, user_id, task_id, csv_file_name)
-        if not success:
-            print(f'upload_file_from_slash_tmp failed: {csv_file_name}.  Next.')
             continue
 
         # send task context to update task log stream queue
