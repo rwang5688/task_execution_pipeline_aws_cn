@@ -9,8 +9,8 @@ import tarfile
 from io import BytesIO
 from io import StringIO
 import json
-import s3util
-import sqsutil
+import taskfile
+import taskmessage
 import dotvfile
 import csvfile
 import issuetable
@@ -31,12 +31,26 @@ def preamble(event, context):
     return True
 
 
-def get_env_vars():
-    global result_data_bucket_name
+def get_env_var(env_var_name):
+    env_var = ''
+    if env_var_name in os.environ:
+        env_var = os.environ[env_var_name]
+    else:
+        print(f'get_env_var: Failed to get {env_var_name}.')
+    return env_var
 
-    result_data_bucket_name = ''
-    if 'RESULT_DATA_BUCKET' in os.environ:
-        result_data_bucket_name = os.environ['RESULT_DATA_BUCKET']
+
+def get_env_vars():
+    global result_bucket_name
+    global generate_task_summary_queue_name
+
+    result_bucket_name = get_env_var('RESULT_DATA_BUCKET')
+    if result_bucket_name == '':
+        return False
+
+    generate_task_summary_queue_name = get_env_var('GENERATE_TASK_SUMMARY_QUEUE')
+    if generate_task_summary_queue_name == '':
+        return False
 
     # success
     return True
@@ -57,31 +71,6 @@ def parse_event_record(event_record):
 
     # success
     return True
-
-
-def get_scan_result_tar_content(bucket_name, task):
-    # get bucket
-    s3util.list_buckets()
-    bucket = s3util.get_bucket(bucket_name)
-    if bucket is None:
-        print(f'get_scan_result_tar_content: Bucket {bucket_name} does not exist.')
-        return None
-
-    # get folder $(user_id)/$(task_id)
-    user_id = task['user_id']
-    task_id = task['task_id']
-
-    # get scan result tar file in memory
-    scan_result_tar = 'scan_result.tar.gz'
-    object_key = user_id + "/" + task_id + "/" + scan_result_tar
-    s3 = s3util.get_s3_client()
-    scan_result_tar_file = s3.get_object(Bucket = bucket_name, Key = object_key)
-    if scan_result_tar_file is None:
-        print(f'get_scan_result_tar_content: Failed to get scan result tar content {scan_result_tar}')
-
-    # return scan result tar content (blob)
-    scan_result_tar_content = scan_result_tar_file['Body'].read()
-    return scan_result_tar_content
 
 
 def write_issue_record(issue_table, issue):
@@ -156,61 +145,6 @@ def write_task_issues(task, scan_result_tar_content, slash_tmp_csv_file_name, is
     return True
 
 
-def upload_file_from_slash_tmp(bucket_name, user_id, task_id, file_name):
-    # get bucket
-    s3util.list_buckets()
-    bucket = s3util.get_bucket(bucket_name)
-    if bucket is None:
-        print(f'upload_file: Bucket {bucket_name} does not exist.')
-        return False
-
-    # debug: list files before
-    s3util.list_files(bucket["Name"])
-
-    # upload file
-    slash_tmp_file_name = '/tmp/' + file_name
-    object_key = user_id + "/" + task_id + "/" + file_name
-    success = s3util.upload_file(slash_tmp_file_name, bucket["Name"], object_key)
-    if not success:
-        print(f'upload_file: Failed to upload object {object_key}.')
-        return False
-
-    # debug: list files after
-    s3util.list_files(bucket["Name"])
-
-    # success
-    return True
-
-
-def send_message(queue_name, action, task):
-    # get queue url
-    sqsutil.list_queues()
-    queue_url = sqsutil.get_queue_url(queue_name)
-    if queue_url is None:
-        print(f'send_message: Queue {queue_name} does not exist.')
-        return False
-
-    # send message
-    message_body = {
-        "action": action,
-        "task": task
-    }
-    message_id = sqsutil.send_message(queue_url, str(message_body))
-    print(f'MessageId: {message_id}')
-    print(f'MessageBody: {message_body}')
-
-    # debug: receive message
-    message = sqsutil.receive_message(queue_url)
-    if message is None:
-        print(f'send_message: cannot retrieve sent messge.')
-        return False
-    print('Received message:')
-    print(message)
-
-    # success
-    return True
-
-
 # uploadTaskIssues handler
 def uploadTaskIssues(event, context):
     success = preamble(event, context)
@@ -225,7 +159,8 @@ def uploadTaskIssues(event, context):
         return False
 
     print('Env vars:')
-    print(f'result_data_bucket_name: {result_data_bucket_name}')
+    print(f'result_bucket_name: {result_bucket_name}')
+    print(f'generate_task_summary_queue_name: {generate_task_summary_queue_name}')
 
     # get issue table
     issue_table = issuetable.get_issue_table()
@@ -250,10 +185,12 @@ def uploadTaskIssues(event, context):
         print('Event record attributes:')
         print(f'task: {task}')
 
-        # get scan result tar content in memory (max 3 GB)
-        scan_result_tar_content = get_scan_result_tar_content(result_data_bucket_name, task)
-        if scan_result_tar_content is None:
-            print('get_scan_result_tar_content failed.  Next.')
+        # get scan result tar blob in memory (max 3 GB)
+        task_file_attribute_name = 'task_scan_result_tar'
+        task[task_file_attribute_name] = 'scan_result.tar.gz'
+        scan_result_tar_blob = taskfile.get_task_file_blob(result_bucket_name, task, task_file_attribute_name)
+        if scan_result_tar_blob is None:
+            print('get_task_file_blob failed.  Next.')
             continue
 
         # write /tmp/$(task_id)_issues.csv file header
@@ -267,24 +204,20 @@ def uploadTaskIssues(event, context):
             continue
 
         # extract dot v files and write task issues
-        success = write_task_issues(task, scan_result_tar_content, slash_tmp_csv_file_name, issue_table)
+        success = write_task_issues(task, scan_result_tar_blob, slash_tmp_csv_file_name, issue_table)
         if not success:
             print('write_task_issues failed.  Next.')
             continue
 
         # upload /tmp/$(task_id)_issues.csv to result data bucket
-        success = upload_file_from_slash_tmp(result_data_bucket_name, user_id, task_id, csv_file_name)
+        success = taskfile.upload_file_from_slash_tmp(result_bucket_name, user_id, task_id, csv_file_name)
         if not success:
-            print(f'upload_file failed: {csv_file_name}.  Next.')
+            print(f'upload_file_from_slash_tmp failed: {csv_file_name}.  Next.')
             continue
 
-        # set upload task issues queue name
-        queue_name = ''
-        if 'GENERATE_TASK_SUMMARY_QUEUE' in os.environ:
-            queue_name = os.environ['GENERATE_TASK_SUMMARY_QUEUE']
-
         # send task context to update task log stream queue
-        success = send_message(queue_name, 'generate_task_summary', task)
+        action = 'generate_task_summary'
+        success = taskmessage.send_task_message(generate_task_summary_queue_name, action, task)
         if not success:
             print('send_message failed.  Next.')
             continue
