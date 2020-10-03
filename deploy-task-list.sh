@@ -75,7 +75,7 @@ function domain-v2 () {
 # create task-list-service API domain
 domain-v1
 
-# deploy task-list-service API functions and task-list-frontend
+# deploy task-list-service API functions and task-list-frontend resources
 SERVICES=(task-list-service task-list-frontend)
 deploy
 
