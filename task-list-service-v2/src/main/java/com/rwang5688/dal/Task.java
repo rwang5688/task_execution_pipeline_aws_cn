@@ -35,7 +35,7 @@ public class Task {
     private String user_id;
     private String task_id;
     private String task_tool;
-    private Map<String,String> task_extra_options;
+    private Map<String, String> task_extra_options;
     private String task_source_code;
     private String task_source_fileinfo;
     private String task_preprocess_tar;
@@ -69,10 +69,10 @@ public class Task {
     }
 
     @DynamoDBAttribute(attributeName = "task_extra_options")
-    public Map<String,String> getTaskExtraOptions() {
+    public Map<String, String> getTaskExtraOptions() {
         return this.task_extra_options;
     }
-    public void setTaskExtraOptions(Map<String,String> task_extra_options) {
+    public void setTaskExtraOptions(Map<String, String> task_extra_options) {
         this.task_extra_options = task_extra_options;
     }
 
