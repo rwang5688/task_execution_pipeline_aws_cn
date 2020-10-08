@@ -30,6 +30,7 @@ provider:
   endpointType: regional
   environment:
     TASK_TABLE: '${env:TASK_EXEC_TASK_TABLE}-${self:provider.stage}'
+    ISSUE_TABLE: '${env:TASK_EXEC_ISSUE_TABLE}-${self:provider.stage}'
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -96,4 +97,14 @@ functions:
           cors: true
 #          authorizer:
 #            arn: '${self:custom.userPoolArn}'
+  listTaskIssues:
+    handler: com.rwang5688.ListTaskIssuesHandler
+    role: arn:${self:custom.cloud}:iam::${self:custom.accountid}:role/task-list
+    events:
+      - http:
+          method: GET
+          path: tasks/{id}/issues
+          cors: true
+#          authorizer:
+#           arn: '${self:custom.userPoolArn}'
 
