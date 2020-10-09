@@ -153,37 +153,6 @@ public class Task {
                             this.submit_timestamp, this.update_timestamp);
     }
 
-    public List<Task> list() throws IOException {
-        DynamoDBScanExpression scanExp = new DynamoDBScanExpression();
-        List<Task> results = this.mapper.scan(Task.class, scanExp);
-        for (Task t : results) {
-            logger.info("Tasks - list(): " + t.toString());
-        }
-        return results;
-    }
-
-    // BUG: this doesn't work without user_id
-    public Task get(String task_id) throws IOException {
-        Task task = null;
-
-        HashMap<String, AttributeValue> av = new HashMap<String, AttributeValue>();
-        av.put(":v1", new AttributeValue().withS(task_id));
-
-        DynamoDBQueryExpression<Task> queryExp = new DynamoDBQueryExpression<Task>()
-            .withKeyConditionExpression("task_id = :v1")
-            .withExpressionAttributeValues(av);
-
-        PaginatedQueryList<Task> result = this.mapper.query(Task.class, queryExp);
-        if (result.size() > 0) {
-            task = result.get(0);
-            logger.info("Tasks - get(): task - " + task.toString());
-        } else {
-            logger.info("Tasks - get(): task - Not Found.");
-        }
-
-        return task;
-    }
-
     public Task get(String user_id, String task_id) throws IOException {
         Task task = null;
 
@@ -192,8 +161,7 @@ public class Task {
         av.put(":v2", new AttributeValue().withS(task_id));
 
         DynamoDBQueryExpression<Task> queryExp = new DynamoDBQueryExpression<Task>()
-            .withKeyConditionExpression("user_id = :v1")
-            .withKeyConditionExpression("task_id = :v2")
+            .withKeyConditionExpression("user_id = :v1 and task_id = :v2")
             .withExpressionAttributeValues(av);
 
         PaginatedQueryList<Task> result = this.mapper.query(Task.class, queryExp);
@@ -212,23 +180,6 @@ public class Task {
         this.mapper.save(task);
     }
 
-    // BUG: this doesn't work without user_id
-    public Boolean delete(String task_id) throws IOException {
-        Task task = null;
-
-        // get task if exists
-        task = get(task_id);
-        if (task != null) {
-            logger.info("Tasks - delete(): " + task.toString());
-            this.mapper.delete(task);
-        } else {
-            logger.info("Tasks - delete(): task - does not exist.");
-            return false;
-        }
-
-        return true;
-    }
-
     public Boolean delete(String user_id, String task_id) throws IOException {
         Task task = null;
 
@@ -243,6 +194,15 @@ public class Task {
         }
 
         return true;
+    }
+
+    public List<Task> list() throws IOException {
+        DynamoDBScanExpression scanExp = new DynamoDBScanExpression();
+        List<Task> results = this.mapper.scan(Task.class, scanExp);
+        for (Task t : results) {
+            logger.info("Tasks - list(): " + t.toString());
+        }
+        return results;
     }
 
 }
