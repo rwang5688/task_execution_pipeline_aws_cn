@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
@@ -26,7 +26,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedQueryList;
 public class Task {
 
     private static final String TASK_TABLE = System.getenv("TASK_TABLE");
-    private static final Logger logger = LogManager.getLogger(Task.class);
+	private static final Logger logger = LoggerFactory.getLogger(Task.class);
 
     private DynamoDBConnection db_connection;
     private AmazonDynamoDB db;
