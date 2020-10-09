@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
@@ -26,7 +26,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedQueryList;
 public class Issue {
 
     private static final String ISSUE_TABLE = System.getenv("ISSUE_TABLE");
-    private static final Logger logger = LogManager.getLogger(Issue.class);
+	private static final Logger logger = LoggerFactory.getLogger(Issue.class);
 
     private DynamoDBConnection db_connection;
     private AmazonDynamoDB db;
@@ -172,7 +172,7 @@ public class Issue {
 
     public String toString() {
         if (this.toStringTemplate == null) {
-            this.toStringTemplate = "Task [task_id=%s, task_issue_number=%d, ";
+            this.toStringTemplate = "Issue [task_id=%s, task_issue_number=%d, ";
             this.toStringTemplate += "issue_key=%s, issue_certainty=%s, issue_complexity=%d, ";
             this.toStringTemplate += "file_path=%s, start_line_no=%d, start_column_no=%d, ";
             this.toStringTemplate += "function_name=%s, variable_name=%s, ";

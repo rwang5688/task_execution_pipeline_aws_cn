@@ -63,7 +63,7 @@ public class GenerateTaskSummaryHandler implements RequestHandler<SQSEvent, Stri
 
     // process event
     for(SQSMessage msg : event.getRecords()){
-      logger.info(msg.getBody());
+      logger.info("Process msg: " + msg.getBody());
       try {
         // get task id
         ObjectMapper mapper = new ObjectMapper();
@@ -77,16 +77,17 @@ public class GenerateTaskSummaryHandler implements RequestHandler<SQSEvent, Stri
 
         // get task
         Task taskRecord = new Task().get(user_id, task_id);
-        logger.info("GenerateTaskSummaryHandler - handleRequest(): " + taskRecord.toString());
+        logger.info("Task: " + taskRecord.toString());
 
         // get task issues
         List<Issue> taskIssues = new Issue().getTaskIssues(task_id);
         for (Issue issue : taskIssues) {
-          logger.info("GenerateTaskSummaryHandler - handleRequest(): " + issue.toString());
+          logger.info("Issue: " + issue.toString());
         }
       } catch (Exception ex) {
         logger.error("Error in retrieving task issues: " + ex);
       }
+      logger.info("Done with msg: " + msg.getBody());
     }
 
     // process Lambda API response
