@@ -63,7 +63,7 @@ functions:
     events:
       - http:
           method: GET
-          path: tasks/{id}
+          path: users/{user_id}/tasks/{task_id}
           cors: true
 #          authorizer:
 #            arn: '${self:custom.userPoolArn}'
@@ -73,7 +73,7 @@ functions:
     events:
       - http:
           method: PUT
-          path: tasks/{id}
+          path: users/{user_id}/tasks/{task_id}
           cors: true
 #          authorizer:
 #            arn: '${self:custom.userPoolArn}'
@@ -83,7 +83,7 @@ functions:
     events:
       - http:
           method: DELETE
-          path: tasks/{id}
+          path: users/{user_id}/tasks/{task_id}
           cors: true
 #          authorizer:
 #            arn: '${self:custom.userPoolArn}'
@@ -97,8 +97,8 @@ functions:
           cors: true
 #          authorizer:
 #            arn: '${self:custom.userPoolArn}'
-  listTaskIssues:
-    handler: com.rwang5688.ListTaskIssuesHandler
+  getTaskIssues:
+    handler: com.rwang5688.GetTaskIssuesHandler
     role: arn:${self:custom.cloud}:iam::${self:custom.accountid}:role/task-list
     events:
       - http:
