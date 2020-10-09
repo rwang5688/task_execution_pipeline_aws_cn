@@ -25,10 +25,11 @@ public class GetTaskHandler implements RequestHandler<Map<String, Object>, ApiGa
         try {
             // get the 'pathParameters' from input
             Map<String, String> pathParameters =  (Map<String, String>)input.get("pathParameters");
-            String taskId = pathParameters.get("id");
+            String user_id = pathParameters.get("user_id");
+            String task_id = pathParameters.get("task_id");
 
             // get the Task by id
-            Task task = new Task().get(taskId);
+            Task task = new Task().get(user_id, task_id);
 
             // send the response back
             if (task != null) {
@@ -40,7 +41,7 @@ public class GetTaskHandler implements RequestHandler<Map<String, Object>, ApiGa
             } else {
                 return ApiGatewayResponse.builder()
                         .setStatusCode(404)
-                        .setObjectBody("Task with id: '" + taskId + "' not found.")
+                        .setObjectBody("Task with user_id=" + user_id + " task_id:=" + task_id + " not found.")
                         .setHeaders(Collections.singletonMap("X-Powered-By", "AWS Lambda & Serverless"))
                         .build();
             }

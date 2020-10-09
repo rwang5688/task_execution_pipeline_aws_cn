@@ -189,15 +189,6 @@ public class Issue {
                             this.error_code, this.message);
     }
 
-    public List<Issue> list() throws IOException {
-        DynamoDBScanExpression scanExp = new DynamoDBScanExpression();
-        List<Issue> results = this.mapper.scan(Issue.class, scanExp);
-        for (Issue issue : results) {
-            logger.info("Issues - list(): " + issue.toString());
-        }
-        return results;
-    }
-
     public List<Issue> getTaskIssues(String task_id) throws IOException {
         HashMap<String, AttributeValue> av = new HashMap<String, AttributeValue>();
         av.put(":v1", new AttributeValue().withS(task_id));

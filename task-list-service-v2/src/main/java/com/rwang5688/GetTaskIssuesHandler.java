@@ -15,9 +15,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.rwang5688.dal.Issue;
 
-public class ListTaskIssuesHandler implements RequestHandler<Map<String, Object>, ApiGatewayResponse> {
+public class GetTaskIssuesHandler implements RequestHandler<Map<String, Object>, ApiGatewayResponse> {
 
-	private static final Logger logger = LogManager.getLogger(ListTaskIssuesHandler.class);
+	private static final Logger logger = LogManager.getLogger(GetTaskIssuesHandler.class);
 
 	@Override
 	public ApiGatewayResponse handleRequest(Map<String, Object> input, Context context) {

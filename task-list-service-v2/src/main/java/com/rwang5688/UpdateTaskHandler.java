@@ -26,10 +26,11 @@ public class UpdateTaskHandler implements RequestHandler<Map<String, Object>, Ap
 		try {
                   // get the 'pathParameters' from input
                   Map<String, String> pathParameters =  (Map<String, String>)input.get("pathParameters");
-                  String taskId = pathParameters.get("id");
+                  String user_id = pathParameters.get("user_id");
+                  String task_id = pathParameters.get("task_id");
 
                   // get the Task by id
-                  Task task = new Task().get(taskId);
+                  Task task = new Task().get(user_id, task_id);
 
                   // send the response back
                   if (task != null) {
@@ -40,7 +41,7 @@ public class UpdateTaskHandler implements RequestHandler<Map<String, Object>, Ap
                         Map<String, String> taskExtraOptionsMap = mapper.convertValue(taskExtraOptions,
                                                                                           new TypeReference<Map<String, String>>(){});
 
-                        task.setUserId(body.get("user_id").asText());
+                        // task.setUserId(body.get("user_id").asText());
                         // task.setTaskId(body.get("task_id").asText());
                         task.setTaskTool(body.get("task_tool").asText());
                         task.setTaskExtraOptions(taskExtraOptionsMap);
@@ -61,7 +62,7 @@ public class UpdateTaskHandler implements RequestHandler<Map<String, Object>, Ap
                   } else {
                         return ApiGatewayResponse.builder()
                               .setStatusCode(404)
-                              .setObjectBody("Task with id: '" + taskId + "' not found.")
+                              .setObjectBody("Task with user_id=" + user_id + " task_id:=" + task_id + " not found.")
                               .setHeaders(Collections.singletonMap("X-Powered-By", "AWS Lambda & Serverless"))
                               .build();
                   }
