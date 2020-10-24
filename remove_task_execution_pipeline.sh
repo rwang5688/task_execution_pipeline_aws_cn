@@ -19,11 +19,13 @@ aws s3 rm s3://${TASK_EXEC_PREPROCESS_DATA_BUCKET} --recursive
 aws s3 rm s3://${TASK_EXEC_LOG_DATA_BUCKET} --recursive
 aws s3 rm s3://${TASK_EXEC_RESULT_DATA_BUCKET} --recursive
 
-# remove resources and functions
-SERVICES=(generate-task-summary upload_task_issues update_task create_task resources)
+# remove functions
+SERVICES=(generate-task-summary upload_task_issues update_task create_task)
 remove
 
-# delete task and issue database tables
-aws dynamodb delete-table --table-name ${TASK_EXEC_TASK_TABLE}-dev
-aws dynamodb delete-table --table-name ${TASK_EXEC_ISSUE_TABLE}-dev
+# remove resources
+echo ----------[ removing resources ]----------
+cd resources
+. remove.sh
+cd ..
 

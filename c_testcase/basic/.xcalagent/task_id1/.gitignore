@@ -56,8 +56,7 @@ cover/
 *.pot
 
 # Django stuff:
-#  Comment out *.log for now to accomodate mock .scan_log files
-#*.log
+*.log
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
@@ -142,15 +141,5 @@ cython_debug/
 .vscode
 .idea
 
-# process_task: executables, outputs
-env-cn*.sh
-env-us*.sh
-task_context.json
-xvsa_scan
-xvsa_scan.exe
-fileinfo.json
-*.tar
-*.tar.gz
-*.preprocess
-*.zip
+# .xcalagent test data environment
 

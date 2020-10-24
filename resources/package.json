@@ -1,13 +1,13 @@
 {
   "name": "resources",
   "version": "1.0.0",
-  "description": "task-list resources",
+  "description": "task-execution-pipeline resources",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
-    "task-list",
+    "task-execution-pipeline",
     "resources"
   ],
   "author": "rwang5688@outlook.com",
