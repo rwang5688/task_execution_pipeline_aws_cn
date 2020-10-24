@@ -1,4 +1,4 @@
-service: upload_task_issues
+service: upload-task-issues
 frameworkVersion: ">=1.30.0"
 plugins:
   - serverless-dotenv-plugin
