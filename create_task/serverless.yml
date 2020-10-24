@@ -1,4 +1,4 @@
-service: create_task
+service: create-task
 frameworkVersion: ">=1.30.0"
 plugins:
   - serverless-dotenv-plugin
