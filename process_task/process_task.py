@@ -122,7 +122,7 @@ def main():
     print('Task:')
     print(task)
 
-    task_file_attribute_name = 'task_source_fileinfo'
+    task_file_attribute_name = 'task_fileinfo_json'
     task_file_name = taskfile.download_task_file(preprocess_bucket_name, task, task_file_attribute_name)
     if task_file_name == '':
         print(f'download_task_file failed: {task_file_attribute_name}.  Exit.')
