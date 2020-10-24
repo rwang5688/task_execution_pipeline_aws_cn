@@ -97,7 +97,7 @@ def main():
     print('Task:')
     print(task)
 
-    task_file_attribute_name = 'task_source_fileinfo'
+    task_file_attribute_name = 'task_fileinfo_json'
     success = taskfile.upload_task_file(preprocess_bucket_name, task, task_file_attribute_name)
     if not success:
         print(f'upload_task_file failed: {task_file_attribute_name}.  Exit.')
@@ -109,7 +109,7 @@ def main():
         print(f'upload_task_file failed: {task_file_attribute_name}.  Exit.')
         return
 
-    task_file_attribute_name = 'task_source_code'
+    task_file_attribute_name = 'task_source_code_zip'
     success = taskfile.upload_task_file(result_bucket_name, task, task_file_attribute_name)
     if not success:
         print(f'upload_task_file failed: {task_file_attribute_name}.  Exit.')

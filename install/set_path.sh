@@ -7,5 +7,8 @@ cd ..
 export PATH=$PATH:$PWD/bin
 printenv PATH
 
+export TASK_EXEC_BIN=$PWD/bin
+printenv TASK_EXEC_BIN
+
 cd install
 
