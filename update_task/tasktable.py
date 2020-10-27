@@ -62,7 +62,7 @@ def update_task_status(task_table, user_id, task_id, task_status):
     return True
 
 
-def write_task_urls(task_table, user_id, task_id, task_dot_scan_log_tar_url, task_summary_pdf_url, task_issues_csv_url):
+def update_task_urls(task_table, user_id, task_id, task_dot_scan_log_tar_url, task_summary_pdf_url, task_issues_csv_url):
     task_table.update_item(
         Key={
             'user_id': user_id,
