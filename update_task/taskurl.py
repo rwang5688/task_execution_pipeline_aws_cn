@@ -42,7 +42,7 @@ def get_base_url(env_var_name):
     print(f'get_base_url: base_url={base_url}')
 
     return base_url
-    
+
 
 def generate_data_bucket_object_url(env_var_name, user_id, task_id, object_name):
     base_url = get_base_url(env_var_name)
