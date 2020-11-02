@@ -46,7 +46,7 @@ def get_base_url(env_var_name):
 def generate_data_bucket_object_url(env_var_name, user_id, task_id, object_name):
     base_url = get_base_url(env_var_name)
     url = base_url + user_id + "/" + task_id + "/" + object_name
-    print(f'generate_task_log_bucket_object_url: {url}')
+    print(f'generate_data_bucket_object_url: {url}')
     return url
 
 
