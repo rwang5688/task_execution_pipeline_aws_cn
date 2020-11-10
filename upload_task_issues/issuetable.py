@@ -1,4 +1,5 @@
 import os
+import logging
 import boto3
 from botocore.exceptions import ClientError
 import copy
@@ -43,9 +44,16 @@ def get_issue_record(issue_table, task_id, task_issue_number):
     return issue_record
 
 
-def batch_create_issue_records(issue_table, issues):
-    with issue_table.batch_writer() as batch:
-        for issue in issues:
-            batch.put_item(Item=issue)
-    return True
+def batch_write_issue_records(issue_table, issues):
+    try:
+        with issue_table.batch_writer() as batch:
+            for issue in issues:
+                batch.put_item(Item=issue)
+        return True
+    except ClientError as err:
+        logging.error(err)
+        return False
+    except Exception as err:
+        logging.error(err)
+        return False
 
