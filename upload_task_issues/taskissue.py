@@ -92,7 +92,7 @@ def write_issue_records(issue_table, issues):
 
 def batch_write_issue_records(issue_table, issues):
     n_total = len(issues)
-    batch_size = 10
+    batch_size = 25
     n_begin = 0
     n_end = batch_size
     while n_end <= n_total:
