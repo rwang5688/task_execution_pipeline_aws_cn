@@ -92,6 +92,10 @@ def write_issue_records(issue_table, issues):
 
 def batch_write_issue_records(issue_table, issues):
     n_total = len(issues)
+    # cap n_total at 1000 for now
+    if n_total > 1000:
+        n_total = 1000
+
     batch_size = 25
     n_begin = 0
     n_end = batch_size
