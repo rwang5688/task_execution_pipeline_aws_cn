@@ -37,7 +37,7 @@ function domain-v1 () {
 
 
 function domain-v2 () {
-  cd task-list-service
+  cd task-list-service-v2
   npm install
   serverless create_domain
   cd ..
@@ -93,13 +93,13 @@ aws s3 sync dist/ s3://$TASK_LIST_APPS_BUCKET
 cd ..
 
 # compile task-list-service-v2 API functions
-SERVICES=(task-list-service-v2)
-compile
+# SERVICES=(task-list-service-v2)
+# compile
 
 # create task-list-service-v2 API domain
-domain-v2
+# domain-v2
 
 # deploy task-list-service-v2 API functions
-SERVICES=(task-list-service-v2)
-deploy
+# SERVICES=(task-list-service-v2)
+# deploy
 
