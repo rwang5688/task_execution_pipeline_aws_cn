@@ -1,18 +1,12 @@
 package com.rwang5688;
 
+import java.lang.StringBuilder;
+import java.util.Map;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
-import com.amazonaws.services.lambda.runtime.Context;
-import com.amazonaws.services.lambda.runtime.LambdaLogger;
-import com.amazonaws.services.lambda.runtime.RequestHandler;
-import com.amazonaws.services.lambda.runtime.events.SQSEvent;
-import com.amazonaws.services.lambda.runtime.events.SQSEvent.SQSMessage;
 
 import software.amazon.awssdk.services.lambda.model.GetAccountSettingsRequest;
 import software.amazon.awssdk.services.lambda.model.GetAccountSettingsResponse;
@@ -20,6 +14,14 @@ import software.amazon.awssdk.services.lambda.model.ServiceException;
 import software.amazon.awssdk.services.lambda.LambdaAsyncClient;
 import software.amazon.awssdk.services.lambda.model.AccountUsage;
 
+import com.amazonaws.services.lambda.runtime.Context;
+import com.amazonaws.services.lambda.runtime.LambdaLogger;
+import com.amazonaws.services.lambda.runtime.RequestHandler;
+import com.amazonaws.services.lambda.runtime.events.SQSEvent;
+import com.amazonaws.services.lambda.runtime.events.SQSEvent.SQSMessage;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -30,8 +32,8 @@ import com.rwang5688.dal.Issue;
 // Handler value: example.Handler
 public class GenerateTaskSummaryHandler implements RequestHandler<SQSEvent, String>{
   private static final Logger logger = LoggerFactory.getLogger(GenerateTaskSummaryHandler.class);
-  private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
   private static final LambdaAsyncClient lambdaClient = LambdaAsyncClient.create();
+  private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
   public GenerateTaskSummaryHandler()
   {
@@ -67,8 +69,9 @@ public class GenerateTaskSummaryHandler implements RequestHandler<SQSEvent, Stri
         JsonNode body = mapper.readTree((String) msg.getBody());
         logger.info("body: " + body.toString());
         JsonNode task = body.get("task");
-        String user_id = task.get("user_id").asText();
-        String task_id = task.get("task_id").asText();
+        logger.info("task: " + task.toString());
+        String user_id = task.get("user_id").toString();
+        String task_id = task.get("task_id").toString();
         logger.info("user_id: " + user_id);
         logger.info("task_id: " + task_id);
 
