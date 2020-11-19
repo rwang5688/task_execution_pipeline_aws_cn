@@ -1,8 +1,5 @@
 package com.rwang5688;
 
-import java.lang.StringBuilder;
-import java.util.Map;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.slf4j.Logger;
@@ -75,11 +72,11 @@ public class GenerateTaskSummaryHandler implements RequestHandler<SQSEvent, Stri
         logger.info("user_id: " + user_id);
         logger.info("task_id: " + task_id);
 
-        // get task
-        Task taskRecord = new Task().get(user_id, task_id);
-        logger.info("Task: " + taskRecord.toString());
+        // get task from DynamoDB
+        //Task taskRecord = new Task().get(user_id, task_id);
+        //logger.info("Task: " + taskRecord.toString());
 
-        // get task issues
+        // get task issues from DynamoDB
         //List<Issue> taskIssues = new Issue().getTaskIssues(task_id);
         //for (Issue issue : taskIssues) {
         //  logger.info("Issue: " + issue.toString());
