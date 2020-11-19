@@ -28,11 +28,10 @@ function deploy () {
 
 
 # compile java functions
-# SERVICES=(generate-task-summary)
-# compile
+SERVICES=(generate-task-summary)
+compile
 
 # create resources and functions
-# SERVICES=(resources create_task update_task upload_task_issues generate-task-summary)
-SERVICES=(resources create_task update_task upload_task_issues)
+SERVICES=(resources create_task update_task upload_task_issues generate-task-summary)
 deploy
 
