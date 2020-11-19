@@ -20,8 +20,7 @@ aws s3 rm s3://${TASK_EXEC_LOG_DATA_BUCKET} --recursive
 aws s3 rm s3://${TASK_EXEC_RESULT_DATA_BUCKET} --recursive
 
 # remove functions
-# SERVICES=(generate-task-summary upload_task_issues update_task create_task)
-SERVICES=(upload_task_issues update_task create_task)
+SERVICES=(generate-task-summary upload_task_issues update_task create_task)
 remove
 
 # remove resources
