@@ -26,7 +26,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 
+import com.rwang5688.dal.TaskTable;
 import com.rwang5688.dal.Task;
+import com.rwang5688.dal.IssueTable;
 import com.rwang5688.dal.Issue;
 
 // Handler value: example.Handler
@@ -76,8 +78,8 @@ public class GenerateTaskSummaryHandler implements RequestHandler<SQSEvent, Stri
         logger.info("task_id: " + task_id);
 
         // get task from DynamoDB
-        //Task taskRecord = new Task().get(user_id, task_id);
-        //logger.info("Task: " + taskRecord.toString());
+        Task taskRecord = new TaskTable().get(user_id, task_id);
+        logger.info("Task: " + taskRecord.toString());
 
         // get task issues from DynamoDB
         //List<Issue> taskIssues = new Issue().getTaskIssues(task_id);
