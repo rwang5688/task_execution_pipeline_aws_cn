@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.rwang5688.dal.Task;
+import com.rwang5688.dal.TaskTable;
 
 
 public class ListTasksHandler implements RequestHandler<Map<String, Object>, ApiGatewayResponse> {
@@ -25,7 +26,7 @@ public class ListTasksHandler implements RequestHandler<Map<String, Object>, Api
         logger.info("received: {}", input);
         try {
             // get all tasks
-            List<Task> tasks = new Task().list();
+            List<Task> tasks = new TaskTable().list();
 
             // send the response back
             return ApiGatewayResponse.builder()

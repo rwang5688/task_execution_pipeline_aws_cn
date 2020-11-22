@@ -12,7 +12,7 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import com.rwang5688.dal.Task;
+import com.rwang5688.dal.TaskTable;
 
 
 public class DeleteTaskHandler implements RequestHandler<Map<String, Object>, ApiGatewayResponse> {
@@ -29,7 +29,7 @@ public class DeleteTaskHandler implements RequestHandler<Map<String, Object>, Ap
             String task_id = pathParameters.get("task_id");
 
             // get the Task by id
-            Boolean success = new Task().delete(user_id, task_id);
+            Boolean success = new TaskTable().delete(user_id, task_id);
 
             // send the response back
             if (success) {

@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.rwang5688.dal.Issue;
+import com.rwang5688.dal.IssueTable;
 
 public class GetTaskIssuesHandler implements RequestHandler<Map<String, Object>, ApiGatewayResponse> {
 
@@ -28,7 +29,7 @@ public class GetTaskIssuesHandler implements RequestHandler<Map<String, Object>,
             String taskId = pathParameters.get("id");
 
             // get task issues
-            List<Issue> taskIssues = new Issue().getTaskIssues(taskId);
+            List<Issue> taskIssues = new IssueTable().getTaskIssues(taskId);
             for (Issue issue : taskIssues) {
                 logger.info("Issue: " + issue.toString());
             }
