@@ -84,6 +84,7 @@ public class GenerateTaskSummaryHandler implements RequestHandler<SQSEvent, Stri
         for (Task t : taskRecords) {
           logger.info("task=" + t.toString());
         }
+        logger.info("[DEBUG]:Done.");
         logger.info("Get Task:");
         Task taskRecord = taskTable.get(user_id, task_id);
         if (taskRecord != null) {
@@ -91,7 +92,6 @@ public class GenerateTaskSummaryHandler implements RequestHandler<SQSEvent, Stri
         } else {
           logger.info("Task not found for user_id=" + user_id + ", task_id=" + task_id + ".");
         }
-
 
         // get task issues from DynamoDB
         //List<Issue> taskIssues = new IssueTable().getTaskIssues(task_id);
