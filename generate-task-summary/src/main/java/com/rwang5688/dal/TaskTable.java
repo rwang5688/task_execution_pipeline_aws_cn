@@ -100,19 +100,11 @@ public class TaskTable {
         Task result = null;
 
         try {
-                QueryConditional queryConditional = QueryConditional
-                        .keyEqualTo(Key.builder()
-                                .partitionValue(user_id)
-                                .sortValue(task_id)
-                                .build());
-
-                // get and return first item
-                logger.info("TaskTable.get(): queryConditional=" + queryConditional.toString() + ".");
-                Iterator<Task> items = mappedTable.query(queryConditional).items().iterator();
-                while (items.hasNext()) {
-                    result = items.next();
-                    break;
-                }
+                Task taskToGet = new Task();
+                taskToGet.setUserId(user_id);
+                taskToGet.setTaskId(task_id);
+                logger.info("TaskTable.get(): taskToGet=" + taskToGet.toString());
+                result = mappedTable.getItem(taskToGet);
         } catch (DynamoDbException e) {
                 logger.info(e.getMessage());
         }

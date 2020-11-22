@@ -79,8 +79,14 @@ public class GenerateTaskSummaryHandler implements RequestHandler<SQSEvent, Stri
 
         // get Task by user_id and task_id
         TaskTable taskTable = new TaskTable();
+        logger.info("[DEBUG]List all Tasks:");
+        List<Task> taskRecords = taskTable.list();
+        for (Task t : taskRecords) {
+          logger.info("task=" + t.toString());
+        }
+        logger.info("[DEBUG]:Done.");
+        logger.info("Get Task:");
         Task taskRecord = taskTable.get(user_id, task_id);
-
         if (taskRecord != null) {
           logger.info("Task: " + taskRecord.toString());
         } else {
@@ -88,7 +94,7 @@ public class GenerateTaskSummaryHandler implements RequestHandler<SQSEvent, Stri
         }
 
         // get task issues from DynamoDB
-        //List<Issue> taskIssues = new Issue().getTaskIssues(task_id);
+        //List<Issue> taskIssues = new IssueTable().getTaskIssues(task_id);
         //for (Issue issue : taskIssues) {
         //  logger.info("Issue: " + issue.toString());
         //}
