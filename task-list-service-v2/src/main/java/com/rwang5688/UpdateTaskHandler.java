@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 import com.rwang5688.dal.Task;
+import com.rwang5688.dal.TaskTable;
 
 
 public class UpdateTaskHandler implements RequestHandler<Map<String, Object>, ApiGatewayResponse> {
@@ -30,21 +31,22 @@ public class UpdateTaskHandler implements RequestHandler<Map<String, Object>, Ap
                   String task_id = pathParameters.get("task_id");
 
                   // get the Task by id
-                  Task task = new Task().get(user_id, task_id);
+                  TaskTable taskTable = new TaskTable();
+                  Task task = taskTable.get(user_id, task_id);
 
                   // send the response back
                   if (task != null) {
 		            // get the 'body' from input
                         ObjectMapper mapper = new ObjectMapper();
                         JsonNode body = mapper.readTree((String) input.get("body"));
-                        JsonNode taskExtraOptions = body.get("task_extra_options");
-                        Map<String, String> taskExtraOptionsMap = mapper.convertValue(taskExtraOptions,
-                                                                                          new TypeReference<Map<String, String>>(){});
+                        //JsonNode taskExtraOptions = body.get("task_extra_options");
+                        //Map<String, String> taskExtraOptionsMap = mapper.convertValue(taskExtraOptions,
+                        //                                        new TypeReference<Map<String, String>>(){});
 
-                        // task.setUserId(body.get("user_id").asText());
-                        // task.setTaskId(body.get("task_id").asText());
+                        //task.setUserId(body.get("user_id").asText());
+                        //task.setTaskId(body.get("task_id").asText());
                         task.setTaskTool(body.get("task_tool").asText());
-                        task.setTaskExtraOptions(taskExtraOptionsMap);
+                        //task.setTaskExtraOptions(taskExtraOptionsMap);
                         task.setTaskFileinfoJson(body.get("task_fileinfo_json").asText());
                         task.setTaskPreprocessTar(body.get("task_preprocess_tar").asText());
                         task.setTaskSourceCodeZip(body.get("task_source_code_zip").asText());
@@ -60,7 +62,7 @@ public class UpdateTaskHandler implements RequestHandler<Map<String, Object>, Ap
                         task.setSubmitTimestamp(body.get("submit_timestamp").asText());
                         task.setUpdateTimestamp(body.get("update_timestamp").asText());
 
-                        task.save(task);
+                        taskTable.save(task);
 
                         return ApiGatewayResponse.builder()
                               .setStatusCode(200)

@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.rwang5688.dal.Task;
+import com.rwang5688.dal.TaskTable;
 
 
 public class GetTaskHandler implements RequestHandler<Map<String, Object>, ApiGatewayResponse> {
@@ -27,9 +28,12 @@ public class GetTaskHandler implements RequestHandler<Map<String, Object>, ApiGa
             Map<String, String> pathParameters =  (Map<String, String>)input.get("pathParameters");
             String user_id = pathParameters.get("user_id");
             String task_id = pathParameters.get("task_id");
+            logger.info("user_id: " + user_id);
+            logger.info("task_id: " + task_id);
 
-            // get the Task by id
-            Task task = new Task().get(user_id, task_id);
+            // get Task by user_id and task_id
+            TaskTable taskTable = new TaskTable();
+            Task task = taskTable.get(user_id, task_id);
 
             // send the response back
             if (task != null) {
@@ -41,7 +45,7 @@ public class GetTaskHandler implements RequestHandler<Map<String, Object>, ApiGa
             } else {
                 return ApiGatewayResponse.builder()
                         .setStatusCode(404)
-                        .setObjectBody("Task with user_id=" + user_id + " task_id:=" + task_id + " not found.")
+                        .setObjectBody("Task not found for user_id=" + user_id + " task_id:=" + task_id + ".")
                         .setHeaders(Collections.singletonMap("X-Powered-By", "AWS Lambda & Serverless"))
                         .build();
             }

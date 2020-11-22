@@ -1,22 +1,20 @@
 package com.rwang5688.dal;
 
-
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
-import com.amazonaws.regions.Regions;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig;
-
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.core.SdkSystemSetting;
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 
 public final class DynamoDBConnection {
     private static DynamoDBConnection db_connection = null;
-    private AmazonDynamoDB db = null;
-    private DynamoDBMapper mapper = null;
+    private DynamoDbClient db = null;
+    private DynamoDbEnhancedClient enhancedClient = null;
 
     private DynamoDBConnection() {
-        this.db = AmazonDynamoDBClientBuilder.standard()
-            .withRegion(Regions.US_WEST_2)
-            .build();
+        Region region = Region.of(System.getenv(SdkSystemSetting.AWS_REGION.environmentVariable()));
+        this.db = DynamoDbClient.builder()
+                                .region(region)
+                                .build();
     }
 
     public static DynamoDBConnection getInstance() {
@@ -26,18 +24,20 @@ public final class DynamoDBConnection {
         return db_connection;
     }
 
-    public AmazonDynamoDB getDb() {
+    public DynamoDbClient getDb() {
         if (db_connection == null)
             db_connection = getInstance();
 
         return db_connection.db;
     }
 
-    public DynamoDBMapper createDbMapper(DynamoDBMapperConfig mapperConfig) {
-        if (this.db != null)
-            mapper = new DynamoDBMapper(this.db, mapperConfig);
+    public DynamoDbEnhancedClient getEnhancedClient() {
+        if (this.enhancedClient == null)
+            this.enhancedClient = DynamoDbEnhancedClient.builder()
+                                                        .dynamoDbClient(this.db)
+                                                        .build();
 
-        return this.mapper;
+        return this.enhancedClient;
     }
 }
 

@@ -6,7 +6,7 @@ public class Task {
     private String user_id;
     private String task_id;
     private String task_tool;
-    private Map<String, String> task_extra_options;
+    //private Map<String, String> task_extra_options;
     private String task_fileinfo_json;
     private String task_preprocess_tar;
     private String task_source_code_zip;
@@ -43,12 +43,12 @@ public class Task {
         this.task_tool = task_tool;
     }
 
-    public Map<String, String> getTaskExtraOptions() {
-        return this.task_extra_options;
-    }
-    public void setTaskExtraOptions(Map<String, String> task_extra_options) {
-        this.task_extra_options = task_extra_options;
-    }
+    //public Map<String, String> getTaskExtraOptions() {
+    //    return this.task_extra_options;
+    //}
+    //public void setTaskExtraOptions(Map<String, String> task_extra_options) {
+    //    this.task_extra_options = task_extra_options;
+    //}
 
     public String getTaskFileinfoJson() {
         return this.task_fileinfo_json;
@@ -153,7 +153,7 @@ public class Task {
     public String toString() {
         if (this.toStringTemplate == null) {
             this.toStringTemplate = "Task [user_id=%s, task_id=%s, ";
-            this.toStringTemplate += "task_tool=%s, task_extra_options=%s, ";
+            this.toStringTemplate += "task_tool=%s, "; //"task_extra_options=%s, ";
             this.toStringTemplate += "task_fileinfo_json=%s, task_preprocess_tar=%s, ";
             this.toStringTemplate += "task_source_code_zip=%s, task_status=%s, ";
             this.toStringTemplate += "task_dot_scan_log_tar=%s, task_dot_scan_log_tar_url=%s, ";
@@ -165,7 +165,7 @@ public class Task {
 
         return String.format(toStringTemplate,
                             this.user_id, this.task_id,
-                            this.task_tool, this.task_extra_options.toString(),
+                            this.task_tool, //this.task_extra_options.toString(),
                             this.task_fileinfo_json, this.task_preprocess_tar,
                             this.task_source_code_zip, this.task_status,
                             this.task_dot_scan_log_tar, this.task_dot_scan_log_tar_url,

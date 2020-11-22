@@ -94,12 +94,12 @@ cd ..
 
 # compile task-list-service-v2 API functions
 # SERVICES=(task-list-service-v2)
-# compile
+compile
 
 # create task-list-service-v2 API domain
-# domain-v2
+domain-v2
 
 # deploy task-list-service-v2 API functions
-# SERVICES=(task-list-service-v2)
-# deploy
+SERVICES=(task-list-service-v2)
+deploy
 
