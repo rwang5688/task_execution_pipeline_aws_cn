@@ -30,6 +30,7 @@ import com.rwang5688.dal.TaskTable;
 import com.rwang5688.dal.Task;
 import com.rwang5688.dal.IssueTable;
 import com.rwang5688.dal.Issue;
+import com.rwang5688.s3.S3File;
 
 // Handler value: example.Handler
 public class GenerateTaskSummaryHandler implements RequestHandler<SQSEvent, String>{
@@ -45,6 +46,11 @@ public class GenerateTaskSummaryHandler implements RequestHandler<SQSEvent, Stri
     } catch(Exception e) {
       e.getStackTrace();
     }
+  }
+
+  private String stripDoubleQuotes(String s) {
+    String result = s.replace("\"", "");
+    return result;
   }
 
   @Override
@@ -66,25 +72,35 @@ public class GenerateTaskSummaryHandler implements RequestHandler<SQSEvent, Stri
     for(SQSMessage msg : event.getRecords()){
       logger.info("Process msg: " + msg.getBody());
       try {
-        // get task id
+        // get Task attributes
         ObjectMapper mapper = new ObjectMapper();
+
+        JsonNode env = mapper.readTree(gson.toJson(System.getenv()));
+        logger.info("env: " + env.toString());
+        String bucket_name = env.get("RESULT_DATA_BUCKET").asText();
+        logger.info("bucket_name: " + bucket_name);
+
         JsonNode body = mapper.readTree((String) msg.getBody());
         logger.info("body: " + body.toString());
         JsonNode task = body.get("task");
         logger.info("task: " + task.toString());
-        String user_id = task.get("user_id").toString();
-        String task_id = task.get("task_id").toString();
+        String user_id = task.get("user_id").asText();
+        String task_id = task.get("task_id").asText();
+        String task_issues_csv = task.get("task_issues_csv").asText();
         logger.info("user_id: " + user_id);
         logger.info("task_id: " + task_id);
+        logger.info("task_issues_csv: " + task_issues_csv);
 
         // get Task by user_id and task_id
         TaskTable taskTable = new TaskTable();
+        /*
         logger.info("[DEBUG]List all Tasks:");
         List<Task> taskRecords = taskTable.list();
         for (Task t : taskRecords) {
           logger.info("task=" + t.toString());
         }
         logger.info("[DEBUG]:Done.");
+        */
         logger.info("Get Task:");
         Task taskRecord = taskTable.get(user_id, task_id);
         if (taskRecord != null) {
@@ -93,11 +109,29 @@ public class GenerateTaskSummaryHandler implements RequestHandler<SQSEvent, Stri
           logger.info("Task not found for user_id=" + user_id + ", task_id=" + task_id + ".");
         }
 
-        // get task issues from DynamoDB
+        // get Issues by task_id
         //List<Issue> taskIssues = new IssueTable().getTaskIssues(task_id);
         //for (Issue issue : taskIssues) {
         //  logger.info("Issue: " + issue.toString());
         //}
+
+        // download task_issues_csv file
+        S3File s3File = new S3File();
+        String bucketName = bucket_name;
+        String objectKey = user_id + "/" + task_id + "/" + task_issues_csv;
+        String filePath = "/tmp/" + task_issues_csv;
+        boolean success = s3File.downloadObject(bucketName, objectKey, filePath);
+        if (success) {
+          logger.info("Successfully downloaded: " +
+                        "bucketName=" + bucketName + ", " +
+                        "objectKey=" + objectKey + ", " +
+                        "filePath=" + filePath + ".");
+        } else {
+          logger.info("Failed to download: " +
+                        "bucketName=" + bucketName + ", " +
+                        "objectKey=" + objectKey + ", " +
+                        "filePath=" + filePath + ".");
+        }
       } catch (Exception ex) {
         logger.error("Error in retrieving task issues: " + ex);
       }
