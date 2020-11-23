@@ -17,6 +17,7 @@ provider:
   region: ${env:TARGET_REGION}
   runtime: java8
   stage: ${opt:stage, 'dev'}
+  endpointType: regional
   iamRoleStatements:
     - Effect: Allow
       Action:
