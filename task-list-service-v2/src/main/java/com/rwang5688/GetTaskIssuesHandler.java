@@ -40,7 +40,7 @@ public class GetTaskIssuesHandler implements RequestHandler<Map<String, Object>,
             // get task issues
             List<Issue> taskIssues = new IssueTable().getTaskIssues(taskId);
             for (Issue issue : taskIssues) {
-                logger.info("Issue: " + issue.toString());
+                logger.info("handleRequest: issue=" + issue);
             }
 
             // send the response back

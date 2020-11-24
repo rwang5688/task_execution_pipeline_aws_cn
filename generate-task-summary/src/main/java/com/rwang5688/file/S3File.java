@@ -1,28 +1,21 @@
-package com.rwang5688.s3;
+package com.rwang5688.file;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.S3Exception;
-
 import software.amazon.awssdk.core.ResponseBytes;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
-
-import java.io.File;
-import java.io.IOException;
-
-import java.io.OutputStream;
-import java.io.FileOutputStream;
-
-
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectResponse;
+
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.FileOutputStream;
+import java.io.FileInputStream;
 
 
 public class S3File {
@@ -37,55 +30,53 @@ public class S3File {
     }
 
     private boolean writeObjectFile(String filePath, byte[] objectData) {
-        OutputStream fileOutputStream = null;
+        FileOutputStream fileOutputStream = null;
         try {
-            // Write the data to a local file
             File file = new File(filePath);
             fileOutputStream = new FileOutputStream(file);
             fileOutputStream.write(objectData);
         } catch (IOException e) {
-            logger.error(e.toString());
+            logger.error("S3File.writeObjectFile: " + e.toString());
             return false;
         } finally {
             if (fileOutputStream != null) {
                 try {
                     fileOutputStream.close();
                 } catch (IOException e) {
-                    logger.error(e.toString());
+                    logger.error("S3File.writeObjectFile: " + e.toString());
                     return false;
                 }
             }
         }
-        // success
         return true;
     }
 
     public boolean downloadObject(String bucketName, String objectKey, String filePath) {
         try {
-            logger.info("S3File.downloadObject(): " +
-                            "bucketName=" + bucketName + ", " +
-                            "objectKey=" + objectKey + ", " +
-                            "filePath=" + filePath + ".");
-
             GetObjectRequest objectRequest = GetObjectRequest
                     .builder()
                     .bucket(bucketName)
                     .key(objectKey)
                     .build();
-
             ResponseBytes<GetObjectResponse> objectBytes = s3.getObjectAsBytes(objectRequest);
             byte[] objectData = objectBytes.asByteArray();
-
             Boolean success = writeObjectFile(filePath, objectData);
+
             if (success) {
-                logger.info("S3File.downloadObject(): writeObjectFile done.");
+                logger.info("S3File.downloadObject: Successfully downloaded " +
+                                                    "bucketName=" + bucketName + ", " +
+                                                    "objectKey=" + objectKey + ", " +
+                                                    "filePath=" + filePath + ".");
                 return true;
             } else {
-                logger.error("S3File.downloadObject(): writeObjectFile failed.");
+                logger.info("S3File.downloadObject: Failed to download " +
+                                                    "bucketName=" + bucketName + ", " +
+                                                    "objectKey=" + objectKey + ", " +
+                                                    "filePath=" + filePath + ".");
                 return false;
             }
         } catch (S3Exception e) {
-            logger.error(e.awsErrorDetails().errorMessage());
+            logger.error("S3File.downloadObject: " + e.awsErrorDetails().errorMessage());
             return false;
         }
     }
@@ -99,13 +90,13 @@ public class S3File {
             fileInputStream = new FileInputStream(file);
             fileInputStream.read(bytesArray);
         } catch (IOException e) {
-            logger.error(e.toString());
+            logger.error("S3File.readObjectFile: " + e.toString());
         } finally {
             if (fileInputStream != null) {
                 try {
                     fileInputStream.close();
                 } catch (IOException e) {
-                    logger.error(e.toString());
+                    logger.error("S3File.readObjectFile: " + e.toString());
                 }
             }
         }
@@ -123,8 +114,9 @@ public class S3File {
             PutObjectResponse response = s3.putObject(request, requestBody);
             return response.eTag();
         } catch (S3Exception e) {
-            logger.error(e.getMessage());
+            logger.error("S3File.uploadObject: " + e.awsErrorDetails().errorMessage());
             return "";
         }
     }
 }
+

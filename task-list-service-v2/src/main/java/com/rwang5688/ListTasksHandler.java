@@ -35,6 +35,9 @@ public class ListTasksHandler implements RequestHandler<Map<String, Object>, Api
         try {
             // get all tasks
             List<Task> tasks = new TaskTable().list();
+            for (Task task : tasks) {
+                logger.info("handleRequest: task=" + task);
+            }
 
             // send the response back
             return ApiGatewayResponse.builder()
