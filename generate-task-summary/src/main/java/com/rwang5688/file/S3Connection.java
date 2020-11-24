@@ -1,4 +1,4 @@
-package com.rwang5688.s3;
+package com.rwang5688.file;
 
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.core.SdkSystemSetting;

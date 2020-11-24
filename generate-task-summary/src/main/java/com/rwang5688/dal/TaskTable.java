@@ -103,17 +103,17 @@ public class TaskTable {
                 Task taskToGet = new Task();
                 taskToGet.setUserId(user_id);
                 taskToGet.setTaskId(task_id);
-                logger.info("TaskTable.get(): taskToGet=" + taskToGet.toString());
+                logger.info("TaskTable.get: taskToGet=" + taskToGet.toString());
                 result = mappedTable.getItem(taskToGet);
         } catch (DynamoDbException e) {
-                logger.info(e.getMessage());
+                logger.info("TaskTable.get: " + e.getMessage());
         }
 
         // debug
         if (result != null) {
-                logger.info("TaskTable.get(): task=" + result.toString());
+                logger.info("TaskTable.get: task=" + result.toString());
         } else {
-                logger.info("TaskTable.get(): task does not exist for user_id=" + user_id + ", task_id=" + task_id + ".");
+                logger.info("TaskTable.get: task does not exist for user_id=" + user_id + ", task_id=" + task_id + ".");
         }
 
         return result;
@@ -121,15 +121,15 @@ public class TaskTable {
 
     public void save(Task task) {
         if (task == null) {
-                logger.info("TaskTable.save(): task is null.");
+                logger.info("TaskTable.save: task is null.");
                 return;
         }
 
         try {
-                logger.info("TaskTable.save(): task=" + task.toString());
+                logger.info("TaskTable.save: task=" + task.toString());
                 mappedTable.putItem(task);
         } catch (DynamoDbException e) {
-                logger.info(e.getMessage());
+                logger.info("TaskTable.save: " + e.getMessage());
         }
     }
 
@@ -138,11 +138,11 @@ public class TaskTable {
 
         task = get(user_id, task_id);
         if (task == null) {
-                logger.info("TaskTable.delete(): task does not exist.");
+                logger.info("TaskTable.delete: task does not exist.");
                 return false;
         }
 
-        logger.info("TaskTable.delete(): task=" + task.toString());
+        logger.info("TaskTable.delete: task=" + task.toString());
         mappedTable.deleteItem(task);
         return true;
     }
@@ -150,21 +150,15 @@ public class TaskTable {
     public List<Task> list() {
         List<Task> results = new ArrayList<Task>();
 
-        try{
+        try {
                 Iterator<Task> items = mappedTable.scan().items().iterator();
                 while (items.hasNext()) {
                     Task task = items.next();
-                    // debug
-                    logger.info("TaskTable.list(): task=" + task.toString());
                     results.add(task);
                 }
-
         } catch (DynamoDbException e) {
-                logger.info(e.getMessage());
+                logger.info("TaskTable.list: " + e.getMessage());
         }
-
-        // debug
-        logger.info("TaskTable.list(): Done.");
 
         return results;
     }

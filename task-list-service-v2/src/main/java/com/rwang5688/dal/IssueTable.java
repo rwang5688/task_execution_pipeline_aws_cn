@@ -87,26 +87,19 @@ public class IssueTable {
         List<Issue> results = new ArrayList<Issue>();
 
         try {
-            QueryConditional queryConditional = QueryConditional
-                    .keyEqualTo(Key.builder()
-                            .partitionValue(task_id)
-                            .build());
+                QueryConditional queryConditional = QueryConditional
+                                                        .keyEqualTo(Key.builder()
+                                                        .partitionValue(task_id)
+                                                        .build());
 
-            // get and return first item
-            Iterator<Issue> items = mappedTable.query(queryConditional).items().iterator();
-            while (items.hasNext()) {
-                Issue issue = items.next();
-                // debug
-                logger.info("IssueTable.getTaskIssues(): issue=" + issue.toString());
-                results.add(issue);
-                break;
-            }
+                Iterator<Issue> items = mappedTable.query(queryConditional).items().iterator();
+                while (items.hasNext()) {
+                        Issue issue = items.next();
+                        results.add(issue);
+                }
         } catch (DynamoDbException e) {
-            logger.info(e.getMessage());
+                logger.info("IssueTable.getTaskIssues: " + e.getMessage());
         }
-
-        // debug
-        logger.info("IssueTable.getTaskIssues(): Done.");
 
         return results;
     }
