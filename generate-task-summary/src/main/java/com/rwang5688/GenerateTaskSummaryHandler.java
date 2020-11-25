@@ -143,7 +143,7 @@ public class GenerateTaskSummaryHandler implements RequestHandler<SQSEvent, Stri
     }
 
     String filePath = "/tmp/" + task_issues_csv;
-    csvData = csvFile.readData(filePath);
+    csvData = csvFile.readAll(filePath, false);
 
     for (String[] row : csvData) {
       logger.info("readTaskIssuesCSVData: row=" + Arrays.toString(row));
