@@ -20,7 +20,7 @@
         <fieldDescription><![CDATA[price]]></fieldDescription>
     </field>
 
-    <sortField name="Name"/>
+    <sortField name="Id"/>
 
     <columnHeader>
         <band height="15">

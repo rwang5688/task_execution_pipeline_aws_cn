@@ -7,55 +7,57 @@ import com.opencsv.CSVReaderBuilder;
 import java.util.List;
 import java.util.ArrayList;
 
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JasperCompileManager;
-import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.data.JRCsvDataSource;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperExportManager;
-import java.util.HashMap;
-
 
 public class CSVFile {
-    public List<String[]> readData(String filePath) {
-        List<String[]> csvData = new ArrayList<String[]>();
+	public String[] readHeader(String csvFilePath)
+	{
+		String[] result = new String[0];
 
-	    try {
-		    FileReader fileReader = new FileReader(filePath);
+		try {
+			FileReader fileReader = new FileReader(csvFilePath);
 
-		    // create csvReader object and skip first Line
-		    CSVReader csvReader = new CSVReaderBuilder(fileReader)
-								        .withSkipLines(1)
-								        .build();
-		    csvData = csvReader.readAll();
-	    }
-	    catch (Exception e) {
-		    System.out.println("CSVFile.readData: " + e);
-        }
+			CSVReader csvReader = new CSVReader(fileReader);
+			String[] nextRecord;
+			while ((nextRecord = csvReader.readNext()) != null) {
+				result = nextRecord;
+				break;
+			}
 
-        return csvData;
+			csvReader.close();
+		}
+		catch (Exception e) {
+			System.out.println("CSVFile.readHeader: " + e);
+		}
+
+		return result;
 	}
 
-	public void writePDFFile(String reportXmlFilePath,
-						String[] columnNames,
-						String csvFilePath,
-						String pdfFilePath) {
-		try {
-			JasperReport report = JasperCompileManager.compileReport(reportXmlFilePath);
+    public List<String[]> readAll(String csvFilePath, boolean skipHeader) {
+		List<String[]> result = new ArrayList<String[]>();
 
-			JRCsvDataSource csvDataSource = new JRCsvDataSource(csvFilePath);
-			csvDataSource.setColumnNames(columnNames);
+	    try {
+		    FileReader fileReader = new FileReader(csvFilePath);
 
-			HashMap<String, Object> params = new HashMap<String, Object>();
-			JasperPrint jasperPrint = JasperFillManager.fillReport(report,
-																params,
-																csvDataSource);
+			CSVReader csvReader;
+		    if (skipHeader) {
+				csvReader = new CSVReaderBuilder(fileReader)
+												.withSkipLines(1)
+												.build();
+			} else {
+				csvReader = new CSVReaderBuilder(fileReader)
+												.withSkipLines(0)
+												.build();
+			}
 
-			JasperExportManager.exportReportToPdfFile(jasperPrint, pdfFilePath);
-		} catch (JRException e) {
-			System.out.println("CSVFile.convertToPDF: " + e);
-		}
-    }
+			result = csvReader.readAll();
+
+			csvReader.close();
+	    }
+	    catch (Exception e) {
+		    System.out.println("CSVFile.readAll: " + e);
+        }
+
+        return result;
+	}
 }
 
