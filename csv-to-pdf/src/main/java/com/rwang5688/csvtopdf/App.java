@@ -21,29 +21,35 @@ public final class App {
 
         System.out.println("Start csv-to-pdf ...");
 
+        System.out.println("==");
+        System.out.println("Set file paths");
+        System.out.println("==");
         reportXmlFilePath = args[0];
         System.out.println("reportXmlFilePath=" + reportXmlFilePath);
-
         csvFilePath = args[1];
         System.out.println("csvFilePath=" + csvFilePath);
-
-        String[] csvFilePathElements = csvFilePath.split("\\.");
+        // set and print PDF file path as $(csvFileBase).pdf
+        String[] csvFilePathElements = csvFilePath.split("\\.csv");
         System.out.println("csvFilePathElements=" + Arrays.toString(csvFilePathElements));
         String csvFileBase = csvFilePathElements[0];
         pdfFilePath = csvFileBase + ".pdf";
         System.out.println("pdfFilePath=" + pdfFilePath);
 
+        System.out.println("==");
+        System.out.println("Test CSV file reader");
+        System.out.println("==");
         CSVFile csvFile = new CSVFile();
-        List<String[]> csvData = csvFile.readData(csvFilePath);
-        for (String[] row : csvData) {
+        // read the entire CSV file including header (skipHeader=false)
+        List<String[]> csvAll = csvFile.readAll(csvFilePath, false);
+        for (String[] row : csvAll) {
             System.out.println("row: " + Arrays.toString(row));
         }
 
-        //String[] columnNames = csvData.get(0);
-        String[] columnNames = new String[]{"Id", "Name", "Price"};
-        System.out.println("columnNames: " + Arrays.toString(columnNames));
-        csvFile.writePDFFile(reportXmlFilePath,
-                            columnNames,
+        System.out.println("==");
+        System.out.println("Test JaperReport PDF file export");
+        System.out.println("==");
+        JasperReportExport jrExport = new JasperReportExport();
+        jrExport.exportPDFFile(reportXmlFilePath,
                             csvFilePath,
                             pdfFilePath);
 
