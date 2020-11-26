@@ -15,8 +15,8 @@ public final class App {
      * @param args The arguments of the program.
      */
     public static void main(String[] args) {
-        String reportXmlFilePath = "";
         String csvFilePath = "";
+        String xmlFilePath = "";
         String pdfFilePath = "";
 
         System.out.println("Start csv-to-pdf ...");
@@ -24,14 +24,20 @@ public final class App {
         System.out.println("==");
         System.out.println("Set file paths");
         System.out.println("==");
-        reportXmlFilePath = args[0];
-        System.out.println("reportXmlFilePath=" + reportXmlFilePath);
-        csvFilePath = args[1];
+        csvFilePath = args[0];
         System.out.println("csvFilePath=" + csvFilePath);
-        // set and print PDF file path as $(csvFileBase).pdf
+
+        // parse CSV file base
         String[] csvFilePathElements = csvFilePath.split("\\.csv");
         System.out.println("csvFilePathElements=" + Arrays.toString(csvFilePathElements));
         String csvFileBase = csvFilePathElements[0];
+        System.out.println("csvFileBase=" + csvFileBase);
+
+        // set and print XML file path as src/resources/main/jrExport/$(csvFileBase).xml
+        xmlFilePath = "src/main/resources/jrExport/" + csvFileBase + ".xml";
+        System.out.println("xmlFilePath=" + xmlFilePath);
+
+        // set and print PDF file path as $(csvFileBase).pdf
         pdfFilePath = csvFileBase + ".pdf";
         System.out.println("pdfFilePath=" + pdfFilePath);
 
@@ -48,8 +54,8 @@ public final class App {
         System.out.println("==");
         System.out.println("Test JaperReport PDF file export");
         System.out.println("==");
-        JasperReportExport jrExport = new JasperReportExport();
-        jrExport.exportPDFFile(reportXmlFilePath,
+        JRExport jrExport = new JRExport();
+        jrExport.exportPDFFile(xmlFilePath,
                             csvFilePath,
                             pdfFilePath);
 
