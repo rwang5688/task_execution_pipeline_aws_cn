@@ -11,11 +11,16 @@ import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectResponse;
+import software.amazon.awssdk.services.s3.model.CopyObjectRequest;
+import software.amazon.awssdk.services.s3.model.CopyObjectResponse;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.FileOutputStream;
 import java.io.FileInputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 
 public class S3File {
@@ -115,6 +120,31 @@ public class S3File {
             return response.eTag();
         } catch (S3Exception e) {
             logger.error("S3File.uploadObject: " + e.awsErrorDetails().errorMessage());
+            return "";
+        }
+    }
+
+    public String copyObject (String fromBucket, String fromObjectKey,
+                                String toBucket, String toObjectKey) {
+        String encodedUrl = null;
+        try {
+            encodedUrl = URLEncoder.encode(fromBucket + "/" + fromObjectKey,
+                                            StandardCharsets.UTF_8.toString());
+        } catch (UnsupportedEncodingException e) {
+            logger.error("S3File.copyObject: URL could not be encoded: " + e.getMessage());
+        }
+
+        CopyObjectRequest copyReq = CopyObjectRequest.builder()
+                .copySource(encodedUrl)
+                .destinationBucket(toBucket)
+                .destinationKey(toObjectKey)
+                .build();
+
+        try {
+            CopyObjectResponse copyRes = s3.copyObject(copyReq);
+            return copyRes.copyObjectResult().toString();
+        } catch (S3Exception e) {
+            logger.error("S3File.copyObject: " + e.awsErrorDetails().errorMessage());
             return "";
         }
     }

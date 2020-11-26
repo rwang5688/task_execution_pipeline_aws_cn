@@ -22,12 +22,12 @@ public class JRExport {
         return columnNames;
     }
 
-    public void exportPDFFile(String reportXmlFilePath,
+    public void exportPDFFile(String xmlFilePath,
                                 String csvFilePath,
                                 String pdfFilePath) {
         try {
             // assume column names are the same for report defn and CSV file header
-            JasperReport report = JasperCompileManager.compileReport(reportXmlFilePath);
+            JasperReport report = JasperCompileManager.compileReport(xmlFilePath);
             JRCsvDataSource csvDataSource = new JRCsvDataSource(csvFilePath);
 
             // get column names from CSV file header and set as CSV data source header
