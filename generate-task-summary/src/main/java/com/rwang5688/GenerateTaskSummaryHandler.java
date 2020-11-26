@@ -33,6 +33,7 @@ import com.rwang5688.dal.Issue;
 
 import com.rwang5688.file.S3File;
 import com.rwang5688.file.CSVFile;
+import com.rwang5688.file.JRExport;
 import java.util.Arrays;
 
 
@@ -71,6 +72,7 @@ public class GenerateTaskSummaryHandler implements RequestHandler<SQSEvent, Stri
 
   private String user_id;
   private String task_id;
+  private String task_summary_pdf;
   private String task_issues_csv;
 
   private void setAttributesBasedOnMsg(SQSMessage msg)
@@ -84,10 +86,12 @@ public class GenerateTaskSummaryHandler implements RequestHandler<SQSEvent, Stri
 
       user_id = task.get("user_id").asText();
       task_id = task.get("task_id").asText();
+      task_summary_pdf = task.get("task_summary_pdf").asText();
       task_issues_csv = task.get("task_issues_csv").asText();
 
       logger.info("user_id=" + user_id);
       logger.info("task_id=" + task_id);
+      logger.info("task_summary_pdf=" + task_summary_pdf);
       logger.info("task_issues_csv=" + task_issues_csv);
     } catch (Exception e) {
       logger.error("setAttributesBasedOnMsg: " + e);
@@ -135,19 +139,89 @@ public class GenerateTaskSummaryHandler implements RequestHandler<SQSEvent, Stri
   }
 
   private CSVFile csvFile;
-  private List<String[]> csvData;
+  private List<String[]> csvAll;
 
   private void readTaskIssuesCSVData() {
     if (csvFile == null) {
       csvFile = new CSVFile();
     }
 
-    String filePath = "/tmp/" + task_issues_csv;
-    csvData = csvFile.readAll(filePath, false);
+    String csvFilePath = "/tmp/" + task_issues_csv;
+    logger.info("readTaskIssuesCSVFile: csvFilePath=" + csvFilePath);
 
-    for (String[] row : csvData) {
-      logger.info("readTaskIssuesCSVData: row=" + Arrays.toString(row));
+    csvAll = csvFile.readAll(csvFilePath, false);
+    logger.info("readTaskIssuesCSVData: Read " + csvAll.size() + " rows.");
+    //for (String[] row : csvAll) {
+    //  logger.info("readTaskIssuesCSVData: row=" + Arrays.toString(row));
+    //}
+  }
+
+  private void downloadTaskIssuesXML(String objectKey) {
+    if (s3File == null) {
+      s3File = new S3File();
     }
+
+    String bucketName = bucket_name;
+    String filePath = "/tmp/" + objectKey;
+    boolean success = s3File.downloadObject(bucketName, objectKey, filePath);
+    if (success) {
+      logger.info("downloadTaskIssuesXML: Successfully downloaded " +
+                    "bucketName=" + bucketName + ", " +
+                    "objectKey=" + objectKey + ", " +
+                    "filePath=" + filePath + ".");
+    } else {
+      logger.info("downloadTaskIssuesXML: Failed to download " +
+                    "bucketName=" + bucketName + ", " +
+                    "objectKey=" + objectKey + ", " +
+                    "filePath=" + filePath + ".");
+    }
+  }
+
+  private void copyTaskSummaryPDFFile() {
+    if (s3File == null) {
+      s3File = new S3File();
+    }
+
+    String bucketName = bucket_name;
+    String fromObjectKey = "task_summary.pdf";
+    String toObjectKey = user_id + "/" + task_id + "/" + task_summary_pdf;
+    logger.info("copyTaskSummaryPDFFile: Copying from " +
+                "bucketName=" + bucketName + ", " + "fromObjectKey=" + fromObjectKey + " to " +
+                "bucketName=" + bucketName + ", " + "toObjectKey=" + toObjectKey + ".");
+    String response = s3File.copyObject(bucketName, fromObjectKey, bucketName, toObjectKey);
+    logger.info("copyTaskSummaryPDFFile: response=" + response);
+  }
+
+  private void exportTaskIssuesPDFFile() {
+    String xmlFileName = "task_issues.xml";
+    downloadTaskIssuesXML(xmlFileName);
+    String xmlFilePath = "/tmp/" + xmlFileName;
+    logger.info("exportTaskIssuesPDFFile: xmlFilePath=" + xmlFilePath);
+
+    String csvFilePath = "/tmp/" + task_issues_csv;
+    logger.info("exportTaskIssuesPDFFile: csvFilePath=" + csvFilePath);
+
+    String[] csvFileNameElements = task_issues_csv.split("\\.csv");
+    logger.info("exportTaskIssuesPDFFile: csvFileNameElements=" + Arrays.toString(csvFileNameElements));
+    String csvFileNameBase = csvFileNameElements[0];
+    logger.info("exportTaskIssuesPDFFile: csvFileNameBase=" + csvFileNameBase);
+
+    String pdfFileName = csvFileNameBase + ".pdf";
+    String pdfFilePath = "/tmp/" + pdfFileName;
+    logger.info("exportTaskIssuesPDFFile: pdfFilePath=" + pdfFilePath);
+
+    JRExport jrExport = new JRExport();
+    jrExport.exportPDFFile(xmlFilePath, csvFilePath, pdfFilePath);
+
+    String bucketName = bucket_name;
+    String objectKey = user_id + "/" + task_id + "/" + pdfFileName;
+    String filePath = pdfFilePath;
+    logger.info("exportTaskIssuesPDFFile: Uploading " +
+                    "bucketName=" + bucketName + ", " +
+                    "objectKey=" + objectKey + ", " +
+                    "filePath=" + filePath + ".");
+    String response = s3File.uploadObject(bucketName, objectKey, filePath);
+    logger.info("exportTaskIssuesPDFFile: response=" + response);
   }
 
   @Override
@@ -175,6 +249,8 @@ public class GenerateTaskSummaryHandler implements RequestHandler<SQSEvent, Stri
         readTask();
         downloadTaskIssuesCSV();
         readTaskIssuesCSVData();
+        copyTaskSummaryPDFFile();
+        exportTaskIssuesPDFFile();
       } catch (Exception e) {
         logger.error("handleRequest: " + e);
       }

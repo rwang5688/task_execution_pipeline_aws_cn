@@ -30,15 +30,15 @@ public final class App {
         // parse CSV file base
         String[] csvFilePathElements = csvFilePath.split("\\.csv");
         System.out.println("csvFilePathElements=" + Arrays.toString(csvFilePathElements));
-        String csvFileBase = csvFilePathElements[0];
-        System.out.println("csvFileBase=" + csvFileBase);
+        String csvFileNameBase = csvFilePathElements[0];
+        System.out.println("csvFileNameBase=" + csvFileNameBase);
 
-        // set and print XML file path as src/resources/main/jrExport/$(csvFileBase).xml
-        xmlFilePath = "src/main/resources/jrExport/" + csvFileBase + ".xml";
+        // set and print XML file path as src/resources/main/jrExport/$(csvFileNameBase).xml
+        xmlFilePath = "src/main/resources/jrExport/" + csvFileNameBase + ".xml";
         System.out.println("xmlFilePath=" + xmlFilePath);
 
-        // set and print PDF file path as $(csvFileBase).pdf
-        pdfFilePath = csvFileBase + ".pdf";
+        // set and print PDF file path as $(csvFileNameBase).pdf
+        pdfFilePath = csvFileNameBase + ".pdf";
         System.out.println("pdfFilePath=" + pdfFilePath);
 
         System.out.println("==");
