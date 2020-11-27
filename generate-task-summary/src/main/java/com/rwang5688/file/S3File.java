@@ -26,12 +26,12 @@ import java.nio.charset.StandardCharsets;
 public class S3File {
     private static final Logger logger = LoggerFactory.getLogger(S3File.class);
 
-    private S3Connection s3_connection;
+    private S3Connection s3Connection;
     private S3Client s3;
 
     public S3File() {
-        this.s3_connection = S3Connection.getInstance();
-        this.s3 = this.s3_connection.getS3();
+        s3Connection = new S3Connection();
+        s3 = s3Connection.getS3();
     }
 
     private boolean writeObjectFile(String filePath, byte[] objectData) {

@@ -37,28 +37,31 @@ public class JRExport {
                             "csvFilePath=" + csvFilePath + ", " +
                             "pdfFilePath=" + pdfFilePath + ". ");
 
-            // assume column names are the same for report defn and CSV file header
+            logger.info("JRExport.exportPDFFile: Read and compile report definition");
             JasperReport report = JasperCompileManager.compileReport(xmlFilePath);
-            logger.info("JRExport.exportPDFFile: Compiled report.");
+            logger.info("JRExport.exportPDFFile: Finished compileReport.");
 
+            logger.info("JRExport.exportPDFFile: Initialize data source.");
             JRCsvDataSource csvDataSource = new JRCsvDataSource(csvFilePath);
-            logger.info("JRExport.exportPDFFile: Initialized data source.");
+            logger.info("JRExport.exportPDFFile: Finished JRCsvDataSource initialization.");
 
-            // get column names from CSV file header and set as CSV data source header
+            logger.info("JRExport.exportPDFFile: Skip and get first row as column names.");
+            csvDataSource.setUseFirstRowAsHeader(true);
             String[] columnNames = getColumnNames(csvFilePath);
             csvDataSource.setColumnNames(columnNames);
             Map<String, Integer> colNames = csvDataSource.getColumnNames();
-            logger.info("JRExport.exportPDFFile: Set column names: " + colNames.toString());
+            logger.info("JRExport.exportPDFFile: Set column names to: " + colNames.toString());
 
-            // fill report: ski first row because it's header
+            logger.info("JRExport.exportPDFFile: Create and fill report.");
             HashMap<String, Object> params = new HashMap<String, Object>();
-            csvDataSource.setUseFirstRowAsHeader(true);
             JasperPrint jasperPrint = JasperFillManager.fillReport(report, params, csvDataSource);
-            logger.info("JRExport.exportPDFFile: Filled report.");
+            logger.info("JRExport.exportPDFFile: Fniished fillReport.");
+            csvDataSource.close();
 
             // export filled report to PDF file
+            logger.info("JRExport.exportPDFFile: Export report to PDF file.");
             JasperExportManager.exportReportToPdfFile(jasperPrint, pdfFilePath);
-            logger.info("JRExport.exportPDFFile: Exported PDF file.");
+            logger.info("JRExport.exportPDFFile: Finished exportReportToPdfFile.");
         } catch (JRException e) {
             logger.error("JRExport.exportPDFFile: " + e);
         }

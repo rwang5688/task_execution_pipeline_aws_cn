@@ -46,12 +46,12 @@ public class GenerateTaskSummaryHandler implements RequestHandler<SQSEvent, Stri
 
   public GenerateTaskSummaryHandler()
   {
-    CompletableFuture<GetAccountSettingsResponse> accountSettings = lambdaClient.getAccountSettings(GetAccountSettingsRequest.builder().build());
-    try {
-      GetAccountSettingsResponse settings = accountSettings.get();
-    } catch(Exception e) {
-      e.getStackTrace();
-    }
+    //CompletableFuture<GetAccountSettingsResponse> accountSettings = lambdaClient.getAccountSettings(GetAccountSettingsRequest.builder().build());
+    //try {
+    //  GetAccountSettingsResponse settings = accountSettings.get();
+    //} catch(Exception e) {
+    //  e.getStackTrace();
+    //}
   }
 
   private String bucket_name;
@@ -98,14 +98,10 @@ public class GenerateTaskSummaryHandler implements RequestHandler<SQSEvent, Stri
     }
   }
 
-  private TaskTable taskTable;
   private Task task;
 
   private void readTask() {
-    if (taskTable == null) {
-      taskTable = new TaskTable();
-    }
-
+    TaskTable taskTable = new TaskTable();
     task = taskTable.get(user_id, task_id);
     if (task != null) {
       logger.info("setTask: task=" + task.toString());
@@ -114,13 +110,8 @@ public class GenerateTaskSummaryHandler implements RequestHandler<SQSEvent, Stri
     }
   }
 
-  private S3File s3File;
-
   private void downloadTaskIssuesCSV() {
-    if (s3File == null) {
-      s3File = new S3File();
-    }
-
+    S3File s3File = new S3File();
     String bucketName = bucket_name;
     String objectKey = user_id + "/" + task_id + "/" + task_issues_csv;
     String filePath = "/tmp/" + task_issues_csv;
@@ -138,17 +129,12 @@ public class GenerateTaskSummaryHandler implements RequestHandler<SQSEvent, Stri
     }
   }
 
-  private CSVFile csvFile;
   private List<String[]> csvAll;
 
   private void readTaskIssuesCSVData() {
-    if (csvFile == null) {
-      csvFile = new CSVFile();
-    }
-
+    CSVFile csvFile = new CSVFile();
     String csvFilePath = "/tmp/" + task_issues_csv;
     logger.info("readTaskIssuesCSVFile: csvFilePath=" + csvFilePath);
-
     csvAll = csvFile.readAll(csvFilePath, false);
     logger.info("readTaskIssuesCSVData: Read " + csvAll.size() + " rows.");
     //for (String[] row : csvAll) {
@@ -157,10 +143,7 @@ public class GenerateTaskSummaryHandler implements RequestHandler<SQSEvent, Stri
   }
 
   private void downloadTaskIssuesXML(String objectKey) {
-    if (s3File == null) {
-      s3File = new S3File();
-    }
-
+    S3File s3File = new S3File();
     String bucketName = bucket_name;
     String filePath = "/tmp/" + objectKey;
     boolean success = s3File.downloadObject(bucketName, objectKey, filePath);
@@ -178,10 +161,7 @@ public class GenerateTaskSummaryHandler implements RequestHandler<SQSEvent, Stri
   }
 
   private void copyTaskSummaryPDFFile() {
-    if (s3File == null) {
-      s3File = new S3File();
-    }
-
+    S3File s3File = new S3File();
     String bucketName = bucket_name;
     String fromObjectKey = "task_summary.pdf";
     String toObjectKey = user_id + "/" + task_id + "/" + task_summary_pdf;
@@ -213,6 +193,7 @@ public class GenerateTaskSummaryHandler implements RequestHandler<SQSEvent, Stri
     JRExport jrExport = new JRExport();
     jrExport.exportPDFFile(xmlFilePath, csvFilePath, pdfFilePath);
 
+    S3File s3File = new S3File();
     String bucketName = bucket_name;
     String objectKey = user_id + "/" + task_id + "/" + pdfFileName;
     String filePath = pdfFilePath;
@@ -230,9 +211,9 @@ public class GenerateTaskSummaryHandler implements RequestHandler<SQSEvent, Stri
     String response = new String();
 
     // call Lambda API
-    logger.info("Getting account settings");
-    CompletableFuture<GetAccountSettingsResponse> accountSettings =
-        lambdaClient.getAccountSettings(GetAccountSettingsRequest.builder().build());
+    //logger.info("Getting account settings");
+    //CompletableFuture<GetAccountSettingsResponse> accountSettings =
+    //    lambdaClient.getAccountSettings(GetAccountSettingsRequest.builder().build());
 
     // log execution details
     logger.info("ENVIRONMENT VARIABLES: {}", gson.toJson(System.getenv()));
@@ -258,13 +239,13 @@ public class GenerateTaskSummaryHandler implements RequestHandler<SQSEvent, Stri
     }
 
     // process Lambda API response
-    try {
-      GetAccountSettingsResponse settings = accountSettings.get();
-      response = gson.toJson(settings.accountUsage());
-      logger.info("Account usage: {}", response);
-    } catch(Exception e) {
-      e.getStackTrace();
-    }
+    //try {
+    //  GetAccountSettingsResponse settings = accountSettings.get();
+    //  response = gson.toJson(settings.accountUsage());
+    //  logger.info("Account usage: {}", response);
+    //} catch(Exception e) {
+    //  e.getStackTrace();
+    //}
     return response;
   }
 }
