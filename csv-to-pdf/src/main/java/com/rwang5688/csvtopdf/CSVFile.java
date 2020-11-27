@@ -15,7 +15,6 @@ public class CSVFile {
 
 		try {
 			FileReader fileReader = new FileReader(csvFilePath);
-
 			CSVReader csvReader = new CSVReader(fileReader);
 			String[] nextRecord;
 			while ((nextRecord = csvReader.readNext()) != null) {
@@ -24,6 +23,7 @@ public class CSVFile {
 			}
 
 			csvReader.close();
+			fileReader.close();
 		}
 		catch (Exception e) {
 			System.out.println("CSVFile.readHeader: " + e);
@@ -37,7 +37,6 @@ public class CSVFile {
 
 	    try {
 		    FileReader fileReader = new FileReader(csvFilePath);
-
 			CSVReader csvReader;
 		    if (skipHeader) {
 				csvReader = new CSVReaderBuilder(fileReader)
@@ -52,6 +51,7 @@ public class CSVFile {
 			result = csvReader.readAll();
 
 			csvReader.close();
+			fileReader.close();
 	    }
 	    catch (Exception e) {
 		    System.out.println("CSVFile.readAll: " + e);

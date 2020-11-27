@@ -26,24 +26,37 @@ public class JRExport {
                                 String csvFilePath,
                                 String pdfFilePath) {
         try {
-            // assume column names are the same for report defn and CSV file header
-            JasperReport report = JasperCompileManager.compileReport(xmlFilePath);
-            JRCsvDataSource csvDataSource = new JRCsvDataSource(csvFilePath);
+            // debug
+            System.out.println("JRExport.exportPDFFile: Begin with " +
+                            "xmlFilePath=" + xmlFilePath + ", " +
+                            "csvFilePath=" + csvFilePath + ", " +
+                            "pdfFilePath=" + pdfFilePath + ". ");
 
-            // get column names from CSV file header and set as CSV data source header
+            System.out.println("JRExport.exportPDFFile: Read and compile report definition");
+            JasperReport report = JasperCompileManager.compileReport(xmlFilePath);
+            System.out.println("JRExport.exportPDFFile: Finished compileReport.");
+
+            System.out.println("JRExport.exportPDFFile: Initialize data source.");
+            JRCsvDataSource csvDataSource = new JRCsvDataSource(csvFilePath);
+            System.out.println("JRExport.exportPDFFile: Finished JRCsvDataSource initialization.");
+
+            System.out.println("JRExport.exportPDFFile: Skip and get first row as column names.");
+            csvDataSource.setUseFirstRowAsHeader(true);
             String[] columnNames = getColumnNames(csvFilePath);
             csvDataSource.setColumnNames(columnNames);
             Map<String, Integer> colNames = csvDataSource.getColumnNames();
-            System.out.println("JRExport.exportPDFFile: Column names: " +
-                                colNames.toString());
+            System.out.println("JRExport.exportPDFFile: Set column names to: " + colNames.toString());
 
-            // fill report: ski first row because it's header
+            System.out.println("JRExport.exportPDFFile: Create and fill report.");
             HashMap<String, Object> params = new HashMap<String, Object>();
-            csvDataSource.setUseFirstRowAsHeader(true);
             JasperPrint jasperPrint = JasperFillManager.fillReport(report, params, csvDataSource);
+            System.out.println("JRExport.exportPDFFile: Fniished fillReport.");
+            csvDataSource.close();
 
             // export filled report to PDF file
+            System.out.println("JRExport.exportPDFFile: Export report to PDF file.");
             JasperExportManager.exportReportToPdfFile(jasperPrint, pdfFilePath);
+            System.out.println("JRExport.exportPDFFile: Finished exportReportToPdfFile.");
         } catch (JRException e) {
             System.out.println("JRExport.exportPDFFile: " + e);
         }
