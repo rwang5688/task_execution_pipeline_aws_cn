@@ -16,6 +16,7 @@ function gather () {
   return {
     user_id: $('#user-id').val(),
     task_id: $('#task-id').val(),
+    project_name: $('#project-name').val(),
     task_tool: $('#task-tool').val(),
     task_extra_options: $('#task-extra-options').val(),
     task_fileinfo_json: $('#task-fileinfo-json').val(),
