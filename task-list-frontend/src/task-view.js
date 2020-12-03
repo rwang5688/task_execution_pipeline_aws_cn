@@ -24,6 +24,7 @@ function renderEditArea (id) {
     if (id) {
       $('#user-id').val($('#' + id + ' #user_id').text());
       $('#task-id').val(id);
+      $('#project-name').val($('#' + id + ' #project_name').text());
       $('#task-tool').val($('#' + id + ' #task_tool').text());
       $('#task-extra-options').val($('#' + id + ' #task_extra_options').text());
       $('#task-fileinfo-json').val($('#' + id + ' #task_fileinfo_json').text());
