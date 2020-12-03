@@ -1,10 +1,11 @@
 package com.rwang5688.dal;
 
-import java.util.Map;
+//import java.util.Map;
 
 public class Task {
     private String user_id;
     private String task_id;
+    private String project_name;
     private String task_tool;
     //private Map<String, String> task_extra_options;
     private String task_fileinfo_json;
@@ -34,6 +35,13 @@ public class Task {
     }
     public void setTaskId(String task_id) {
         this.task_id = task_id;
+    }
+
+    public String getProjectName() {
+        return this.project_name;
+    }
+    public void setProjectName(String project_name) {
+        this.project_name = project_name;
     }
 
     public String getTaskTool() {
@@ -153,6 +161,7 @@ public class Task {
     public String toString() {
         if (this.toStringTemplate == null) {
             this.toStringTemplate = "Task [user_id=%s, task_id=%s, ";
+            this.toStringTemplate += "project_name=%s, ";
             this.toStringTemplate += "task_tool=%s, "; //"task_extra_options=%s, ";
             this.toStringTemplate += "task_fileinfo_json=%s, task_preprocess_tar=%s, ";
             this.toStringTemplate += "task_source_code_zip=%s, task_status=%s, ";
@@ -165,6 +174,7 @@ public class Task {
 
         return String.format(toStringTemplate,
                             this.user_id, this.task_id,
+                            this.project_name,
                             this.task_tool, //this.task_extra_options.toString(),
                             this.task_fileinfo_json, this.task_preprocess_tar,
                             this.task_source_code_zip, this.task_status,
