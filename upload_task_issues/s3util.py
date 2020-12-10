@@ -43,6 +43,17 @@ def get_bucket(bucket_name):
     return result
 
 
+def get_file_object(bucket_name, object_name):
+    s3 = get_s3_client()
+    file_object = None
+    try:
+        file_object = s3.get_object(Bucket=bucket_name, Key=object_name)
+    except ClientError as e:
+        logging.error(e)
+        return None
+    return file_object
+
+
 def list_files(bucket_name):
     # Retrieve the list of existing files
     s3 = get_s3_client()
@@ -80,15 +91,4 @@ def download_file(bucket_name, object_name, file_name=None):
         logging.error(e)
         return False
     return True
-
-
-def get_file_object(bucket_name, object_name):
-    s3 = get_s3_client()
-    file_object = None
-    try:
-        file_object = s3.get_object(Bucket=bucket_name, Key=object_name)
-    except ClientError as e:
-        logging.error(e)
-        return None
-    return file_object
 
