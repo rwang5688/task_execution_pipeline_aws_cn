@@ -107,7 +107,7 @@ def upload_cache_files(task):
     cache_file_name = cachefile.upload_cache_file(cache_bucket_name, task, \
                         cache_name, cache_id_attribute_name, cache_file_attribute_name)
     if cache_file_name == '':
-        print('upload_cache_files: Failed for %s.' % cache_file_attribute_name)
+        print('upload_cache_files failed: %s.' % cache_file_attribute_name)
         return False
 
     # success
