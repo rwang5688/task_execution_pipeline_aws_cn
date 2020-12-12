@@ -69,13 +69,13 @@ def list_files(bucket_name):
             print('Key: %s' % bucketFile["Key"])
 
 
-def upload_file(file_name, bucket, object_name=None):
+def upload_file(file_name, bucket_name, object_name=None):
     if object_name is None:
         object_name = file_name
 
     s3 = get_s3_client()
     try:
-        response = s3.upload_file(file_name, bucket, object_name)
+        response = s3.upload_file(file_name, bucket_name, object_name)
         print('s3util.upload_file: response=%s' % response)
     except ClientError as e:
         logging.error(e)
