@@ -43,7 +43,8 @@ def get_cache_file_blob(bucket_name, task, \
 
 
 def upload_cache_file(bucket_name, task, \
-    cache_name, cache_id_attribute_name, cache_file_attribute_name):
+    cache_name, cache_id_attribute_name, cache_file_attribute_name, \
+    local_cache_dir=""):
     bucket = s3util.get_bucket(bucket_name)
     if bucket is None:
         print('upload_cache_file: Bucket %s does not exist.' % bucket_name)
@@ -52,26 +53,27 @@ def upload_cache_file(bucket_name, task, \
     # get cache_id, cache_file_name
     cache_id = get_task_attribute_value(task, cache_id_attribute_name)
     if cache_id == '':
-        return None
+        return ''
 
     cache_file_name = get_task_attribute_value(task, cache_file_attribute_name)
     if cache_file_name == '':
-        return None
+        return ''
 
     # upload {cache_name}/{cache_id}/{cache_file_name}
     cache_file_object_name = cache_name + "/" + cache_id + "/" + cache_file_name
-    upload_file_name = "extra-object/" + cache_file_name
+    upload_file_name = local_cache_dir + cache_file_name
     success = s3util.upload_file(upload_file_name, bucket_name, cache_file_object_name)
     if not success:
         print('upload_cache_file: Failed to upload file %s.' % cache_file_name)
         return ''
 
     # success
-    return cache_file_name
+    return upload_file_name
 
 
 def download_cache_file(bucket_name, task, \
-    cache_name, cache_id_attribute_name, cache_file_attribute_name):
+    cache_name, cache_id_attribute_name, cache_file_attribute_name, \
+    local_cache_dir=""):
     bucket = s3util.get_bucket(bucket_name)
     if bucket is None:
         print('download_cache_file: Bucket %s does not exist.' % bucket_name)
@@ -80,20 +82,20 @@ def download_cache_file(bucket_name, task, \
     # get cache_id, cache_file_name
     cache_id = get_task_attribute_value(task, cache_id_attribute_name)
     if cache_id == '':
-        return None
+        return ''
 
     cache_file_name = get_task_attribute_value(task, cache_file_attribute_name)
     if cache_file_name == '':
-        return None
+        return ''
 
     # download {cache_name}/{cache_id}/{cache_file_name}
     cache_file_object_name = cache_name + "/" + cache_id + "/" + cache_file_name
-    download_file_name = "extra-object/" + cache_file_name
+    download_file_name = local_cache_dir + cache_file_name
     success = s3util.download_file(bucket_name, cache_file_object_name, download_file_name)
     if not success:
         print('download_cache_file: Failed to download file %s.' % cache_file_name)
         return ''
 
     # success
-    return cache_file_name
+    return download_file_name
 
