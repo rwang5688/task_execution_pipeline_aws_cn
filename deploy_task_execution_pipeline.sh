@@ -26,6 +26,7 @@ function deploy () {
   done
 }
 
+
 # compile java functions
 SERVICES=(generate-task-summary)
 compile
