@@ -26,7 +26,6 @@ function deploy () {
   done
 }
 
-
 # compile java functions
 SERVICES=(generate-task-summary)
 compile
@@ -35,14 +34,16 @@ compile
 SERVICES=(resources create_task update_task upload_task_issues generate-task-summary)
 deploy
 
-# for now, only aws has Lambda function with container image
-if [ ${TARGET_CLOUD} == "aws"] then
-  SERVICES=(process_task_service)
-  deploy
-fi
-
 # copy generate-task-summary resources
 cd generate-task-summary
 aws s3 sync src/main/resources/jrExport s3://${TASK_EXEC_RESULT_DATA_BUCKET}
 cd ..
+
+# Lambda with container image doesn't work as expected
+# when we need to write to file system
+# ... comment out for now
+#if [[ ${TARGET_CLOUD} == "aws" ]]; then
+#  SERVICES=(process_task_service)
+#  deploy
+#fi
 
