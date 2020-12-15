@@ -10,6 +10,7 @@ export TASK_EXEC_CACHE_DATA_BUCKET=task-exec-cache-data-bucket-xcalibyte-com-cn
 export TASK_EXEC_LOG_DATA_BUCKET=task-exec-log-data-bucket-xcalibyte-com-cn
 export TASK_EXEC_RESULT_DATA_BUCKET=task-exec-result-data-bucket-xcalibyte-com-cn
 export TASK_EXEC_CREATE_TASK_QUEUE=task-exec-create-task-queue-xcalibyte-com-cn
+export TASK_EXEC_PROCESS_TASK_TRIGGER_QUEUE=task-exec-process-task-trigger-queue-xcalibyte-com-cn
 export TASK_EXEC_PROCESS_TASK_QUEUE=task-exec-process-task-queue-xcalibyte-com-cn
 export TASK_EXEC_UPDATE_TASK_QUEUE=task-exec-update-task-queue-xcalibyte-com-cn
 export TASK_EXEC_UPLOAD_TASK_ISSUES_QUEUE=task-exec-upload-task-issues-queue-xcalibyte-com-cn

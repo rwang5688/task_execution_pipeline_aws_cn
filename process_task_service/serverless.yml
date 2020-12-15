@@ -10,6 +10,7 @@ custom:
   cacheDataBucket: ${env:TASK_EXEC_CACHE_DATA_BUCKET}
   logDataBucket: ${env:TASK_EXEC_LOG_DATA_BUCKET}
   resultDataBucket: ${env:TASK_EXEC_RESULT_DATA_BUCKET}
+  processTaskTriggerQueue: ${env:TASK_EXEC_PROCESS_TASK_TRIGGER_QUEUE}
   processTaskQueue: ${env:TASK_EXEC_PROCESS_TASK_QUEUE}
   updateTaskQueue: ${env:TASK_EXEC_UPDATE_TASK_QUEUE}
   dotenv:
@@ -45,6 +46,12 @@ provider:
         - sqs:ReceiveMessage
         - sqs:DeleteMessage
         - sqs:GetQueueUrl
+      Resource: "arn:${self:custom.cloud}:sqs:*:*:${self:custom.processTaskTriggerQueue}"
+    - Effect: Allow
+      Action:
+        - sqs:ReceiveMessage
+        - sqs:DeleteMessage
+        - sqs:GetQueueUrl
       Resource: "arn:${self:custom.cloud}:sqs:*:*:${self:custom.processTaskQueue}"
     - Effect: Allow
       Action:
@@ -59,5 +66,5 @@ functions:
     role: arn:${self:custom.cloud}:iam::${self:custom.accountid}:role/task-execution-pipeline
     events:
       - sqs:
-          arn: "arn:${self:custom.cloud}:sqs:${self:provider.region}:${self:custom.accountid}:${self:custom.processTaskQueue}"
+          arn: "arn:${self:custom.cloud}:sqs:${self:provider.region}:${self:custom.accountid}:${self:custom.processTaskTriggerQueue}"
 
