@@ -62,7 +62,7 @@ provider:
 
 functions:
   process_task:
-    image: ${self:custom.accountid}.dkr.ecr.${self:provider.region}.amazonaws.com/process-task-cn@sha256:f3fb67fc8c01495e037c3d83b9ec52dcc4bff828743ee2d2f7abe065ebc4b092
+    image: ${self:custom.accountid}.dkr.ecr.${self:provider.region}.amazonaws.com/process-task-cn@sha256:b49b6edcd79a7af467040513638705c76ac1a0f4d97123e770c844f8f37f34f7
     role: arn:${self:custom.cloud}:iam::${self:custom.accountid}:role/task-execution-pipeline
     events:
       - sqs:
