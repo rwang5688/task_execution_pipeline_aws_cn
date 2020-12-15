@@ -80,7 +80,7 @@ def upload_cache_file(bucket_name, task, \
 
 def download_cache_file(bucket_name, task, \
     cache_name, cache_id_attribute_name, cache_file_attribute_name, \
-    local_cache_dir=""):
+    local_cache_dir=None):
     bucket = s3util.get_bucket(bucket_name)
     if bucket is None:
         print('download_cache_file: Bucket %s does not exist.' % bucket_name)
@@ -98,7 +98,7 @@ def download_cache_file(bucket_name, task, \
     # download {cache_name}/{cache_id}/{cache_file_name}
     cache_file_object_name = cache_name + "/" + cache_id + "/" + cache_file_name
     download_file_name = cache_file_name
-    if not local_cache_dir == "":
+    if local_cache_dir is not None:
         download_file_name = local_cache_dir + "/" + cache_file_name
     success = s3util.download_file(bucket_name, cache_file_object_name, download_file_name)
     if not success:
