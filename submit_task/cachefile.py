@@ -12,6 +12,26 @@ def get_task_attribute_value(task, task_attribute_name):
     return task_attribute_value
 
 
+def file_exists(bucket_name, task, cache_name, cache_id_attribute_name, cache_file_attribute_name):
+    bucket = s3util.get_bucket(bucket_name)
+    if bucket is None:
+        print('file_exists: Bucket %s does not exist.' % bucket_name)
+        return None
+
+    # get cache_id, cache_file_name
+    cache_id = get_task_attribute_value(task, cache_id_attribute_name)
+    if cache_id == '':
+        return None
+
+    cache_file_name = get_task_attribute_value(task, cache_file_attribute_name)
+    if cache_file_name == '':
+        return None
+
+    # get {cache_name}/{cache_id}/{cache_file_name}
+    cache_file_object_name = cache_name + "/" + cache_id + "/" + cache_file_name
+    return s3util.file_exists(bucket_name, cache_file_object_name)
+
+
 def get_cache_file_blob(bucket_name, task, \
     cache_name, cache_id_attribute_name, cache_file_attribute_name):
     bucket = s3util.get_bucket(bucket_name)
