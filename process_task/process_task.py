@@ -175,7 +175,7 @@ def main():
         print('download_preprocess_files failed.  Exit.')
         return
 
-    # tar -xvzf doesn't work prooperly in Windows Bash
+    # tar -xvzf doesn't work properly in Windows Bash
     # need to add the tar command to xvsa_start.sh
     success = download_cache_files(task)
     if not success:
