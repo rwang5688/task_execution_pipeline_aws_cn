@@ -43,6 +43,24 @@ def get_bucket(bucket_name):
     return result
 
 
+def file_exists(bucket_name, object_name):
+    s3 = get_s3_client()
+    try:
+        s3.head_object(Bucket=bucket_name, Key=object_name)
+    except ClientError as e:
+        if e.response['Error']['Code'] == "404":
+            # The object does not exist
+            print("%s file not found" % object_name)
+            return False
+        else:
+            logging.error("unexpected error occurs:")
+            logging.exception(e)
+            # Something else has gone wrong, should raise exception here
+            return False
+    else:
+        return True
+
+
 def get_file_object(bucket_name, object_name):
     s3 = get_s3_client()
     result = None
