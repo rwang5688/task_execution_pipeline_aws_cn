@@ -147,6 +147,7 @@ node_modules
 # Serverless Framework
 .serverless
 
-# dotvfile_to_csvfile output
+# dotvfile_to_csvfile input and output
+*.v
 *.csv
 
