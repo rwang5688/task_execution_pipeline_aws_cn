@@ -25,7 +25,7 @@ if [ -f rt_o.tgz ]; then
 elif [ -f rt.tgz ]; then
     echo "[CMD] tar -xvzf rt.tgz -C extra-object"
     tar -xvzf rt.tgz -C extra-object
-    upload_rt_out=1
+    upload_rt_out = 1
 fi
 
 # for debug use
@@ -50,11 +50,13 @@ echo "[CMD] tar -cvzf scan_result.tar.gz scan_result"
 tar -cvzf scan_result.tar.gz scan_result
 
 # for java, package rt.o
-if [ $upload_rt_out -eq 1 -a ! -f extra-object/rt_o.tgz ]; then
-  echo "package rt.o"
-  cd extra-object
-  echo "[CMD] find . -name rt.o | xargs tar -zcvf rt_o.tgz"
-  find . -name rt.o | xargs tar -zcvf rt_o.tgz
-  cd -
+if [ ${upload_rt_out} -eq 1 ]; then
+    if [ -f extra-object/rt_o.tgz ]; then
+        echo "package rt.o"
+        cd extra-object
+        echo "[CMD] find . -name rt.o | xargs tar -zcvf rt_o.tgz"
+        find . -name rt.o | xargs tar -zcvf rt_o.tgz
+        cd -
+    fi
 fi
 
