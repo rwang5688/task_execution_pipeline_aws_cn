@@ -104,7 +104,7 @@ def upload_cache_files(task):
         print('upload_cache_files: File exists for cache %s.' % cache_name)
         return True
 
-    upload_file_name = cachefile.upload_cache_file(cache_bucket_name, task, \
+    upload_file_name = cachefile.upload_cache_file(cache_bucket_name, task,
                         cache_name, cache_id_attribute_name, cache_file_attribute_name)
     if upload_file_name == '':
         # error
