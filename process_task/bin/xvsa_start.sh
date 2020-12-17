@@ -9,7 +9,7 @@ echo "SCAN_EXTRA_JFE_OPTIONS: ${SCAN_EXTRA_JFE_OPTIONS}"
 echo "SCAN_EXTRA_VARIABLE_OPTION: ${SCAN_EXTRA_VARIABLE_OPTION}"
 echo "SCAN_EXTRA_SKIP_VTABLE_OPTION: ${SCAN_EXTRA_VTABLE_OPTION}"
 
-need_cache=0
+upload_rt_out=0
 
 mkdir -p ${SCAN_TASK_ID}.preprocess
 if [ -f preprocess.tar.gz ]; then
@@ -25,7 +25,7 @@ if [ -f rt_o.tgz ]; then
 elif [ -f rt.tgz ]; then
     echo "[CMD] tar -xvzf rt.tgz -C extra-object"
     tar -xvzf rt.tgz -C extra-object
-    upload_rt_out = 1
+    upload_rt_out=1
 fi
 
 # for debug use
@@ -50,8 +50,8 @@ echo "[CMD] tar -cvzf scan_result.tar.gz scan_result"
 tar -cvzf scan_result.tar.gz scan_result
 
 # for java, package rt.o
-if [ ${upload_rt_out} -eq 1 ]; then
-    if [ -f extra-object/rt_o.tgz ]; then
+if [ $upload_rt_out -eq 1 ]; then
+    if [ ! -f extra-object/rt_o.tgz ]; then
         echo "package rt.o"
         cd extra-object
         echo "[CMD] find . -name rt.o | xargs tar -zcvf rt_o.tgz"
