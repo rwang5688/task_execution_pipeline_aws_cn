@@ -50,16 +50,11 @@ def get_cache_file_blob(bucket_name, task, \
 
     # get {cache_name}/{cache_id}/{cache_file_name}
     cache_file_object_name = cache_name + "/" + cache_id + "/" + cache_file_name
-    cache_file_object = s3util.get_file_object(bucket_name, cache_file_object_name)
-    if cache_file_object is None:
-        print('get_cache_file_blob: Failed to get file object %s' % cache_file_object_name)
+    cache_file_blob = s3util.get_file_blob(bucket_name, cache_file_object_name)
+    if cache_file_blob is None:
+        print('get_cache_file_blob: Failed to get file blob %s' % cache_file_object_name)
         return None
 
-    # debug
-    print('get_cache_file_blob: Got file object %s.' % cache_file_object_name)
-
-    # extract blob from object
-    cache_file_blob = cache_file_object['Body'].read()
     return cache_file_blob
 
 

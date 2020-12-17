@@ -99,14 +99,16 @@ def upload_cache_files(task):
         print('upload_cache_files: No need for cache %s.' % cache_name)
         return True
 
-    if cachefile.file_exists(cache_bucket_name, task, cache_name, cache_id_attribute_name,
-                                   cache_file_attribute_name):
+    if cachefile.file_exists(cache_bucket_name, task,
+                        cache_name, cache_id_attribute_name, cache_file_attribute_name):
+        print('upload_cache_files: File exists for %s.' % cache_file_attribute_name)
         return True
 
-    upload_file_name = cachefile.upload_cache_file(cache_bucket_name, task, \
+    upload_file_name = cachefile.upload_cache_file(cache_bucket_name, task,
                         cache_name, cache_id_attribute_name, cache_file_attribute_name)
     if upload_file_name == '':
-        print('upload_cache_files failed: %s.' % cache_file_attribute_name)
+        # error
+        print('upload_cache_files: File upload failed for %s.' % cache_file_attribute_name)
         return False
 
     # success
