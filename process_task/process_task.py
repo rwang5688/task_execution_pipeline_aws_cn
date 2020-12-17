@@ -63,15 +63,16 @@ def download_cache_files(task):
         print('download_cache_files: No need for cache %s.' % cache_name)
         return True
 
-    # first download rt_o.tgz, if download failed, then download rt.tgz
-    download_file_name = cachefile.download_cache_file(cache_bucket_name, task, \
+    # first try downloading rt_o.tgz
+    download_file_name = cachefile.download_cache_file(cache_bucket_name, task,
                         cache_name, cache_id_attribute_name, cache_rt_out_attribute_name)
     if download_file_name == '':
+        # next try downloading rt.tgz
         print('download_cache_files failed: %s.' % cache_rt_out_attribute_name)
-        download_file_name = cachefile.download_cache_file(cache_bucket_name, task, \
-                                                           cache_name, cache_id_attribute_name,
-                                                           cache_rt_lib_attribute_name)
+        download_file_name = cachefile.download_cache_file(cache_bucket_name, task,
+                            cache_name, cache_id_attribute_name, cache_rt_lib_attribute_name)
         if download_file_name == '':
+            # error
             print('download_cache_files failed: %s.' % cache_rt_lib_attribute_name)
             return False
 
