@@ -9,8 +9,6 @@ echo "SCAN_EXTRA_JFE_OPTIONS: ${SCAN_EXTRA_JFE_OPTIONS}"
 echo "SCAN_EXTRA_VARIABLE_OPTION: ${SCAN_EXTRA_VARIABLE_OPTION}"
 echo "SCAN_EXTRA_SKIP_VTABLE_OPTION: ${SCAN_EXTRA_VTABLE_OPTION}"
 
-upload_rt_out=0
-
 mkdir -p ${SCAN_TASK_ID}.preprocess
 if [ -f preprocess.tar.gz ]; then
     echo "[CMD] tar -xvzf preprocess.tar.gz -C ${SCAN_TASK_ID}.preprocess"
@@ -19,6 +17,7 @@ fi
 
 # for java
 mkdir -p extra-object
+upload_rt_out=0
 if [ -f rt_o.tgz ]; then
     echo "[CMD] tar -xvzf rt_o.tgz -C extra-object"
     tar -xvzf rt_o.tgz -C extra-object
