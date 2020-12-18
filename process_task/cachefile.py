@@ -114,7 +114,7 @@ def download_cache_file(bucket_name, task, \
     cache_file_object_name = cache_name + "/" + cache_id + "/" + cache_file_name
     download_file_name = cache_file_name
     if local_cache_dir is not None:
-        download_file_name = local_cache_dir + "/" + cache_file_name
+        download_file_name = os.path.join(local_cache_dir, cache_file_name)
     success = s3util.download_file(bucket_name, cache_file_object_name, download_file_name)
     if not success:
         print('download_cache_file: Failed to download file %s.' % cache_file_name)

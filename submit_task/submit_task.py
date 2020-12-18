@@ -112,10 +112,18 @@ def upload_cache_files(task):
     if cache_id == '':
         return True
 
+    cache_file_name = cachefile.get_task_attribute_value(task, cache_file_attribute_name)
+    if cache_file_name == '':
+        return True
+
     xcalibyte_path = os.path.join(str(Path.home()), XCALIBYTE_DIR_NAME, cache_id)
     if not os.path.exists(xcalibyte_path):
-        print('upload_cache_files: Path does not exist for %s. (unexpected error occurs)' % xcalibyte_path)
-        return True
+        print('upload_cache_files: Path does not exist for %s.' % xcalibyte_path)
+        if os.path.exists(cache_file_name):
+            xcalibyte_path = None
+            print("upload_cache_files: Use file in path %s" % os.path.join(os.getcwd(), cache_file_name))
+        else:
+            return True
 
     upload_file_name = cachefile.upload_cache_file(cache_bucket_name, task,
                         cache_name, cache_id_attribute_name, cache_file_attribute_name, local_cache_dir=xcalibyte_path)
