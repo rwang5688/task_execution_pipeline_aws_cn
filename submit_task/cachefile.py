@@ -79,7 +79,7 @@ def upload_cache_file(bucket_name, task, \
     cache_file_object_name = cache_name + "/" + cache_id + "/" + cache_file_name
     upload_file_name = cache_file_name
     if local_cache_dir is not None:
-        upload_file_name = local_cache_dir + "/" + cache_file_name
+        upload_file_name = os.path.join(local_cache_dir, cache_file_name)
     if not os.path.exists(upload_file_name):
         print('upload_cache_file: File %s does not exist' % upload_file_name)
         return ''

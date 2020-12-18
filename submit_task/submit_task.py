@@ -2,9 +2,13 @@ import os
 import json
 import copy
 import uuid
+from pathlib import Path
 import cachefile
 import taskfile
 import taskmessage
+
+
+XCALIBYTE_DIR_NAME = ".xcalibyte"
 
 
 def get_env_var(env_var_name):
@@ -104,8 +108,17 @@ def upload_cache_files(task):
         print('upload_cache_files: File exists for %s.' % cache_file_attribute_name)
         return True
 
+    cache_id = cachefile.get_task_attribute_value(task, cache_id_attribute_name)
+    if cache_id == '':
+        return True
+
+    xcalibyte_path = os.path.join(str(Path.home()), XCALIBYTE_DIR_NAME, cache_id)
+    if not os.path.exists(xcalibyte_path):
+        print('upload_cache_files: Path does not exist for %s. (unexpected error occurs)' % xcalibyte_path)
+        return True
+
     upload_file_name = cachefile.upload_cache_file(cache_bucket_name, task,
-                        cache_name, cache_id_attribute_name, cache_file_attribute_name)
+                        cache_name, cache_id_attribute_name, cache_file_attribute_name, local_cache_dir=xcalibyte_path)
     if upload_file_name == '':
         # error
         print('upload_cache_files: File upload failed for %s.' % cache_file_attribute_name)
