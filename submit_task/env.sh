@@ -17,4 +17,5 @@ export TASK_EXEC_UPLOAD_TASK_ISSUES_QUEUE=task-exec-upload-task-issues-queue-xca
 export TASK_EXEC_GENERATE_TASK_SUMMARY_QUEUE=task-exec-generate-task-summary-queue-xcalibyte-com-cn
 export TASK_EXEC_TASK_TABLE=task-exec-task-table-xcalibyte-com-cn
 export TASK_EXEC_ISSUE_TABLE=task-exec-issue-table-xcalibyte-com-cn
+export XCALIBYTE_DIR_NAME=.xcalibyte
 
