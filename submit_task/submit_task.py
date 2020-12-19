@@ -8,9 +8,6 @@ import taskfile
 import taskmessage
 
 
-XCALIBYTE_DIR_NAME = ".xcalibyte"
-
-
 def get_env_var(env_var_name):
     env_var = ''
     if env_var_name in os.environ:
@@ -25,6 +22,7 @@ def get_env_vars():
     global cache_bucket_name
     global result_bucket_name
     global create_task_queue_name
+    global xcalibyte_dir_name
 
     preprocess_bucket_name = get_env_var('TASK_EXEC_PREPROCESS_DATA_BUCKET')
     if preprocess_bucket_name == '':
@@ -40,6 +38,10 @@ def get_env_vars():
 
     create_task_queue_name = get_env_var('TASK_EXEC_CREATE_TASK_QUEUE')
     if create_task_queue_name == '':
+        return False
+
+    xcalibyte_dir_name = get_env_var('XCALIBYTE_DIR_NAME')
+    if xcalibyte_dir_name == '':
         return False
 
     # success
@@ -116,7 +118,7 @@ def upload_cache_files(task):
     if cache_file_name == '':
         return True
 
-    xcalibyte_path = os.path.join(str(Path.home()), XCALIBYTE_DIR_NAME, cache_id)
+    xcalibyte_path = os.path.join(str(Path.home()), xcalibyte_dir_name, cache_id)
     if not os.path.exists(xcalibyte_path):
         print('upload_cache_files: Path does not exist for %s.' % xcalibyte_path)
         if os.path.exists(cache_file_name):
@@ -126,7 +128,8 @@ def upload_cache_files(task):
             return True
 
     upload_file_name = cachefile.upload_cache_file(cache_bucket_name, task,
-                        cache_name, cache_id_attribute_name, cache_file_attribute_name, local_cache_dir=xcalibyte_path)
+                        cache_name, cache_id_attribute_name, cache_file_attribute_name,
+                        local_cache_dir=xcalibyte_path)
     if upload_file_name == '':
         # error
         print('upload_cache_files: File upload failed for %s.' % cache_file_attribute_name)
@@ -149,6 +152,7 @@ def main():
     print('cache_bucket_name: %s' % cache_bucket_name)
     print('result_bucket_name: %s' % result_bucket_name)
     print('create_task_queue_name: %s' % create_task_queue_name)
+    print('xcalibyte_dir_name: %s' % xcalibyte_dir_name)
 
     success = parse_arguments()
     if not success:
