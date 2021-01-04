@@ -19,6 +19,8 @@ def get_env_vars():
     global preprocess_bucket_name
     global cache_bucket_name
     global process_task_queue_name
+    global update_task_queue_name
+    global log_bucket_name
 
     preprocess_bucket_name = get_env_var('TASK_EXEC_PREPROCESS_DATA_BUCKET')
     if preprocess_bucket_name == '':
@@ -30,6 +32,14 @@ def get_env_vars():
 
     process_task_queue_name = get_env_var('TASK_EXEC_PROCESS_TASK_QUEUE')
     if process_task_queue_name == '':
+        return False
+
+    update_task_queue_name = get_env_var('TASK_EXEC_UPDATE_TASK_QUEUE')
+    if update_task_queue_name == '':
+        return False
+
+    log_bucket_name = get_env_var('TASK_EXEC_LOG_DATA_BUCKET')
+    if log_bucket_name == '':
         return False
 
     # success
@@ -80,6 +90,15 @@ def download_cache_files(task):
     return True
 
 
+def upload_log_files(task):
+    task_file_attribute_name = 'task_dot_scan_log_tar'
+    task_file_name = taskfile.upload_task_file(log_bucket_name, task, task_file_attribute_name)
+    if task_file_name == '':
+        print('upload_result_files failed: %s.' % task_file_attribute_name)
+        return False
+    return True
+
+
 def set_env_vars(task):
     task_id = ''
     if 'task_id' in task:
@@ -113,11 +132,11 @@ def read_process_stdout(process):
             for output in process.stdout.readlines():
                 print(output.strip())
             break
+    return return_code
 
 
 def execute_task_tool(task):
     # get task_tool
-    task_tool = ""
     if "task_tool" in task:
         task_tool = task["task_tool"]
     else:
@@ -129,24 +148,29 @@ def execute_task_tool(task):
         shell=True,
         stdout=subprocess.PIPE, universal_newlines=True,
         env=os.environ)
-    read_process_stdout(process)
+    return_code = read_process_stdout(process)
 
     # for now: always set task_status to "completed"
     # later: read task_status from executing task_tool
-    task["task_status"] = "completed"
-
-    # success
-    return True
+    if return_code == 0:
+        task["task_status"] = "completed"
+        # success
+        return True
+    else:
+        task["task_status"] = "scan-failed"
+        return False
 
 
 def execute_task_callback(task_callback):
     # command: "python3 $(task_callback)"
     process = subprocess.Popen(["python3", task_callback],
         stdout=subprocess.PIPE, universal_newlines=True)
-    read_process_stdout(process)
-
-    # success
-    return True
+    return_code = read_process_stdout(process)
+    if return_code != 0:
+        return False
+    else:
+        # success
+        return True
 
 
 def main():
@@ -198,13 +222,28 @@ def main():
     print('set_env_vars: %s' % os.environ)
 
     success = execute_task_tool(task)
-    if not success:
-        print('execute_task_tool failed.  Exit.')
-        return
 
     task_tool = task["task_tool"]
     task_status = task["task_status"]
     print('execute_task_tool completed for task_tool=%s with task_status=%s.' % (task_tool, task_status))
+
+    if not success:
+        # if scan failed, delete task messages from process task queue and update update task queue
+        print('execute_task_tool failed.')
+
+        success = upload_log_files(task)
+        if not success:
+            print('upload_log_files failed.')
+
+        success = taskmessage.delete_task_message(process_task_queue_name, message)
+        if not success:
+            print('delete_task_message failed.')
+
+        action = 'update'
+        success = taskmessage.send_task_message(update_task_queue_name, action, task)
+        if not success:
+            print('send_task_message failed.')
+        return
 
     success = taskjson.write_task_json(task)
     if not success:
