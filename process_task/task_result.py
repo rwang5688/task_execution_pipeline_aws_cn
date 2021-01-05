@@ -121,6 +121,7 @@ def main():
         if not success:
             print('upload_cache_files failed: task=%s.' % task)
 
+        # upload_result_files method will also upload log files
         success = upload_result_files(task)
         if not success:
             print('upload_result_files failed: task=%s.' % task)
