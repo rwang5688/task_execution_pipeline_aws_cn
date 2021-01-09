@@ -71,7 +71,7 @@ def upload_log_files(task):
     task_file_attribute_name = 'task_dot_scan_log_tar'
     task_file_name = taskfile.upload_task_file(log_bucket_name, task, task_file_attribute_name)
     if task_file_name == '':
-        print('upload_result_files failed: %s.' % task_file_attribute_name)
+        print('upload_log_files failed: %s.' % task_file_attribute_name)
         return False
 
     # success
