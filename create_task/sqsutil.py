@@ -33,8 +33,6 @@ def get_queue_url(queue_name):
     sqs = get_sqs_client()
 
     # Make sure queue name exists
-    response = sqs.list_queues()
-
     # Get URL for SQS queue
     try:
         response = sqs.get_queue_url(QueueName=queue_name)
