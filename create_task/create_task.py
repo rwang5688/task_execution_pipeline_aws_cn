@@ -61,22 +61,22 @@ def parse_event_record(event_record):
 
     event_body = eval(event_record['body'])
     if event_body is None:
-        print('parse_event: event body is missing.')
+        print('parse_event_record: event body is missing.')
         return False
 
     task = event_body['task']
     if task is None:
-        print('parse_event: task is missing.')
+        print('parse_event_record: task is missing.')
         return False
 
     event_attributes = event_record['attributes']
     if event_attributes is None:
-        print('parse_event: event attributes are missing.')
+        print('parse_event_record: event attributes are missing.')
         return False
 
     submit_timestamp = event_attributes['SentTimestamp']
     if submit_timestamp is None:
-        print('parse_event: sent timestamp is missing.')
+        print('parse_event_record: sent timestamp is missing.')
         return False
 
     # success
