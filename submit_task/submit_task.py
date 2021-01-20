@@ -163,7 +163,7 @@ def main():
     print('task_conf_file_name: %s' % task_conf_file_name)
 
     task_conf = get_json_data(task_conf_file_name)
-    if task_conf == None:
+    if task_conf is None:
         print('get_json_data failed.  Exit.')
         return
 
