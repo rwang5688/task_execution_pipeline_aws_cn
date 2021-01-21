@@ -87,10 +87,13 @@ def upload_preprocess_files(task):
         return False
 
     task_file_attribute_name = 'task_source_code_zip'
-    task_file_name = taskfile.upload_task_file(result_bucket_name, task, task_file_attribute_name)
-    if task_file_name == '':
-        print('upload_preprocess_files failed: %s.' % task_file_attribute_name)
-        return False
+    if task_file_attribute_name in task:
+        task_file_name = taskfile.upload_task_file(result_bucket_name, task, task_file_attribute_name)
+        if task_file_name == '':
+            print('upload_preprocess_files failed: %s.' % task_file_attribute_name)
+            return False
+    else:
+        print('upload_preprocess_files: No need to upload source code package')
 
     # success
     return True

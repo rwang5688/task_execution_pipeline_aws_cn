@@ -138,17 +138,23 @@ def create_task(event, context):
             continue
         print('task_record: %s' % task_record)
 
-        task_fileinfo_json = task_record['task_fileinfo_json']
-        task_fileinfo_json_url = taskurl.generate_preprocess_data_bucket_object_url(
-                                        user_id, task_id, task_fileinfo_json)
+        task_fileinfo_json = task_record.get('task_fileinfo_json')
+        task_fileinfo_json_url = ""
+        if task_fileinfo_json is not None:
+            task_fileinfo_json_url = taskurl.generate_preprocess_data_bucket_object_url(
+                                            user_id, task_id, task_fileinfo_json)
 
-        task_preprocess_tar = task_record['task_preprocess_tar']
-        task_preprocess_tar_url = taskurl.generate_preprocess_data_bucket_object_url(
-                                        user_id, task_id, task_preprocess_tar)
+        task_preprocess_tar = task_record.get('task_preprocess_tar')
+        task_preprocess_tar_url = ""
+        if task_preprocess_tar is not None:
+            task_preprocess_tar_url = taskurl.generate_preprocess_data_bucket_object_url(
+                                            user_id, task_id, task_preprocess_tar)
 
-        task_source_code_zip = task_record['task_source_code_zip']
-        task_source_code_zip_url = taskurl.generate_result_data_bucket_object_url(
-                                        user_id, task_id, task_source_code_zip)
+        task_source_code_zip = task_record.get('task_source_code_zip')
+        task_source_code_zip_url = ""
+        if task_source_code_zip is not None:
+            task_source_code_zip_url = taskurl.generate_result_data_bucket_object_url(
+                                            user_id, task_id, task_source_code_zip)
 
         success = tasktable.update_preprocess_urls(task_table, user_id, task_id,
                                                 task_fileinfo_json_url,
