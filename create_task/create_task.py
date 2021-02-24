@@ -8,6 +8,7 @@ from aws_xray_sdk.core import patch_all
 import tasktable
 import taskurl
 import taskmessage
+import ecsutil
 
 
 logger = logging.getLogger()
@@ -185,6 +186,8 @@ def create_task(event, context):
 
         # Note: Start ECS Fargate cluster to process task.
         # ECS Fargate cluster appear to start a task as soon as process queue has message.
+        resp = ecsutil.run_fargate_task()
+        print('run_fargate_task response: %s' % resp)
 
         # if send_task_message succeeds, update task status to "started"
         task_status = 'started'
