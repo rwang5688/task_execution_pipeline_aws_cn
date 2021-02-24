@@ -15,20 +15,20 @@ def get_ecs_client():
 
 
 # run_fargate_task
-def run_fargate_task():
+def run_fargate_task(cluster_name, task_definition, aws_vpc_subnet, aws_vpc_security_group):
     client = get_ecs_client()
     response = client.run_task(
-        cluster='scan-default',
+        cluster=cluster_name,
         launchType = 'FARGATE',
-        taskDefinition='scan-task:17',
+        taskDefinition=task_definition,
         count = 1,
         platformVersion='LATEST',
         networkConfiguration={
             'awsvpcConfiguration': {
                 'subnets': [
-                    'subnet-0db2bd72f1721a5c4',
+                    aws_vpc_subnet,
                 ],
-                'securityGroups': ['sg-07a8f6d3484ddb72d'],
+                'securityGroups': [aws_vpc_security_group],
                 'assignPublicIp': 'ENABLED'
             }
         },
