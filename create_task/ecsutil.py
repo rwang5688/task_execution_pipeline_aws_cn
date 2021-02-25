@@ -17,23 +17,28 @@ def get_ecs_client():
 # run_fargate_task
 def run_fargate_task(cluster_name, task_definition, aws_vpc_subnet, aws_vpc_security_group):
     client = get_ecs_client()
-    response = client.run_task(
-        cluster=cluster_name,
-        launchType = 'FARGATE',
-        taskDefinition=task_definition,
-        count = 1,
-        platformVersion='LATEST',
-        networkConfiguration={
-            'awsvpcConfiguration': {
-                'subnets': [
-                    aws_vpc_subnet,
-                ],
-                'securityGroups': [aws_vpc_security_group],
-                'assignPublicIp': 'ENABLED'
-            }
-        },
-        overrides={
-            'containerOverrides': [],
-        },
-    )
-    return str(response)
+    try:
+        response = client.run_task(
+            cluster=cluster_name,
+            launchType = 'FARGATE',
+            taskDefinition=task_definition,
+            count = 1,
+            platformVersion='LATEST',
+            networkConfiguration={
+                'awsvpcConfiguration': {
+                    'subnets': [
+                        aws_vpc_subnet,
+                    ],
+                    'securityGroups': [aws_vpc_security_group],
+                    'assignPublicIp': 'ENABLED'
+                }
+            },
+            overrides={
+                'containerOverrides': [],
+            },
+        )
+        print('run ecs task response: %s' % str(response))
+        return True
+    except BaseException as exp:
+        print(exp)
+        return False
