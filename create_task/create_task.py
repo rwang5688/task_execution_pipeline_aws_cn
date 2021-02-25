@@ -41,7 +41,7 @@ def get_env_vars():
     global process_task_trigger_queue_name
     global ecs_cluster_name
     global ecs_task_definition
-    global ecs_task_network_aws_vpc_subset
+    global ecs_task_network_aws_vpc_subnet
     global ecs_task_network_aws_vpc_security_group
 
     cloud = get_env_var('CLOUD')
@@ -64,8 +64,8 @@ def get_env_vars():
     if ecs_task_definition == '':
         return False
 
-    ecs_task_network_aws_vpc_subset = get_env_var('ECS_TASK_NETWORK_AWS_VPC_SUBSET')
-    if ecs_task_network_aws_vpc_subset == '':
+    ecs_task_network_aws_vpc_subnet = get_env_var('ECS_TASK_NETWORK_AWS_VPC_SUBNET')
+    if ecs_task_network_aws_vpc_subnet == '':
         return False
 
     ecs_task_network_aws_vpc_security_group = get_env_var('ECS_TASK_NETWORK_AWS_VPC_SECURITY_GROUP')
@@ -123,7 +123,7 @@ def create_task(event, context):
     print('process_task_trigger_queue_name: %s' % process_task_trigger_queue_name)
     print('ecs_cluster_name: %s' % ecs_cluster_name)
     print('ecs_task_definition: %s' % ecs_task_definition)
-    print('ecs_task_network_aws_vpc_subset: %s' % ecs_task_network_aws_vpc_subset)
+    print('ecs_task_network_aws_vpc_subnet: %s' % ecs_task_network_aws_vpc_subnet)
     print('ecs_task_network_aws_vpc_security_group: %s' % ecs_task_network_aws_vpc_security_group)
 
     # get task table
@@ -134,6 +134,7 @@ def create_task(event, context):
 
     # create task records
     event_records = event['Records']
+    print('begin to process %s event records...' % len(event_records))
     for event_record in event_records:
         # debug: print event record
         print('event_record: %s' % event_record)
@@ -210,9 +211,10 @@ def create_task(event, context):
 
         # Note: Start ECS Fargate cluster to process task.
         # ECS Fargate cluster appear to start a task as soon as process queue has message.
-        resp = ecsutil.run_fargate_task(ecs_cluster_name, ecs_task_definition,
-                                        ecs_task_network_aws_vpc_subset, ecs_task_network_aws_vpc_security_group)
-        print('run_fargate_task response: %s' % resp)
+        success = ecsutil.run_fargate_task(ecs_cluster_name, ecs_task_definition,
+                                        ecs_task_network_aws_vpc_subnet, ecs_task_network_aws_vpc_security_group)
+        if not success:
+            print('run_fargate_task failed, continue lambda function to make message delete from queue automatically')
 
         # if send_task_message succeeds, update task status to "started"
         task_status = 'started'
