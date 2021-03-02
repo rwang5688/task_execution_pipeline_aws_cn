@@ -212,7 +212,11 @@ def create_task(event, context):
                 print('send_message failed for process task trigger queue.  Next.')
                 continue
 
-        ecs_task_network_vpc_subnets = [ecs_task_network_vpc_subnet1, ecs_task_network_vpc_subnet2]
+        ecs_task_network_vpc_subnets = list()
+        if ecs_task_network_vpc_subnet1 != '':
+            ecs_task_network_vpc_subnets.append(ecs_task_network_vpc_subnet1)
+        if ecs_task_network_vpc_subnet2 != '':
+            ecs_task_network_vpc_subnets.append(ecs_task_network_vpc_subnet2)
         # Note: Start ECS Fargate cluster to process task.
         # ECS Fargate cluster appear to start a task as soon as process queue has message.
         success = ecsutil.run_fargate_task(ecs_cluster_name, ecs_task_definition,

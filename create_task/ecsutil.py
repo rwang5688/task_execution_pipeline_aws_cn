@@ -16,6 +16,10 @@ def get_ecs_client():
 
 # run_fargate_task
 def run_fargate_task(cluster_name, task_definition, aws_vpc_subnets: list, aws_vpc_security_group: str):
+    print('run_fargate_task: cluster_name: %s' % cluster_name)
+    print('run_fargate_task: task_definition: %s' % task_definition)
+    print('run_fargate_task: aws_vpc_subnets: %s' % aws_vpc_subnets)
+    print('run_fargate_task: aws_vpc_security_group: %s' % aws_vpc_security_group)
     client = get_ecs_client()
     try:
         response = client.run_task(
