@@ -66,11 +66,8 @@ def get_env_vars():
         return False
 
     ecs_task_network_vpc_subnet1 = get_env_var('ECS_TASK_NETWORK_VPC_SUBNET1')
-    if ecs_task_network_vpc_subnet1 == '':
-        return False
-
     ecs_task_network_vpc_subnet2 = get_env_var('ECS_TASK_NETWORK_VPC_SUBNET2')
-    if ecs_task_network_vpc_subnet2 == '':
+    if ecs_task_network_vpc_subnet1 == '' and ecs_task_network_vpc_subnet2 == '':
         return False
 
     ecs_task_network_vpc_security_group = get_env_var('ECS_TASK_NETWORK_VPC_SECURITY_GROUP')
