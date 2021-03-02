@@ -15,7 +15,7 @@ def get_ecs_client():
 
 
 # run_fargate_task
-def run_fargate_task(cluster_name, task_definition, aws_vpc_subnet, aws_vpc_security_group):
+def run_fargate_task(cluster_name, task_definition, aws_vpc_subnets: list, aws_vpc_security_group: str):
     client = get_ecs_client()
     try:
         response = client.run_task(
@@ -26,9 +26,7 @@ def run_fargate_task(cluster_name, task_definition, aws_vpc_subnet, aws_vpc_secu
             platformVersion='LATEST',
             networkConfiguration={
                 'awsvpcConfiguration': {
-                    'subnets': [
-                        aws_vpc_subnet,
-                    ],
+                    'subnets': aws_vpc_subnets,
                     'securityGroups': [aws_vpc_security_group],
                     'assignPublicIp': 'ENABLED'
                 }
