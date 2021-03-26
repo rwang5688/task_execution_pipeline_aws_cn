@@ -68,6 +68,7 @@ functions:
   create_task:
     handler: create_task.create_task
     role: arn:${self:custom.cloud}:iam::${self:custom.accountid}:role/task-execution-pipeline
+    tracing: true
     environment:
       ACCOUNT_ID: ${env:AWS_ACCOUNT_ID}
       CLOUD: ${env:TARGET_CLOUD}
