@@ -26,6 +26,7 @@ provider:
   region: ${env:TARGET_REGION}
   runtime: nodejs12.x
   stage: ${opt:stage, 'dev'}
+  lambdaHashingVersion: 20201221 # optional, version of hashing algorithm that should be used by the framework
 
 resources:
   - ${file(./task-exec-preprocess-data-bucket.yml)}
