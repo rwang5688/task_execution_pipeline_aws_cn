@@ -21,7 +21,7 @@ provider:
   region: ${env:TARGET_REGION}
   runtime: python3.8
   stage: dev
-  lambdaHashingVersion: 20201221 # optional, version of hashing algorithm that should be used by the framework
+  lambdaHashingVersion: 20201221
   iamRoleStatements:
     - Effect: Allow
       Action:
