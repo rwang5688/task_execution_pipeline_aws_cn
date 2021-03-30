@@ -27,7 +27,7 @@ provider:
   region: ${env:TARGET_REGION}
   runtime: java8
   stage: ${opt:stage, 'dev'}
-  lambdaHashingVersion: 20201221 # optional, version of hashing algorithm that should be used by the framework
+  lambdaHashingVersion: 20201221
   endpointType: regional
   environment:
     TASK_TABLE: '${env:TASK_EXEC_TASK_TABLE}-${self:provider.stage}'
