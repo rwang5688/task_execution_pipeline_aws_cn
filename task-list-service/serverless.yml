@@ -31,17 +31,19 @@ provider:
   endpointType: regional
   environment:
     TASK_TABLE: '${env:TASK_EXEC_TASK_TABLE}-${self:provider.stage}'
-  iamRoleStatements:
-    - Effect: Allow
-      Action:
-        - dynamodb:DescribeTable
-        - dynamodb:Query
-        - dynamodb:Scan
-        - dynamodb:GetItem
-        - dynamodb:PutItem
-        - dynamodb:UpdateItem
-        - dynamodb:DeleteItem
-      Resource: "arn:${self:custom.cloud}:dynamodb:${self:custom.region}:${self:custom.accountid}:*"
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:DescribeTable
+            - dynamodb:Query
+            - dynamodb:Scan
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:UpdateItem
+            - dynamodb:DeleteItem
+          Resource: "arn:${self:custom.cloud}:dynamodb:${self:custom.region}:${self:custom.accountid}:*"
 
 functions:
   create:
