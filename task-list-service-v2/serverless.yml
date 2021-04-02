@@ -31,8 +31,8 @@ provider:
   lambdaHashingVersion: 20201221
   endpointType: regional
   environment:
-    TASK_TABLE: '${self:custom:taskExecTaskTable, env:TASK_EXEC_TASK_TABLE}-${self:provider.stage}'
-    ISSUE_TABLE: '${self:custom:TaskExecIssueTable, env:TASK_EXEC_ISSUE_TABLE}-${self:provider.stage}'
+    TASK_TABLE: '${self:custom.taskExecTaskTable, env:TASK_EXEC_TASK_TABLE}-${self:provider.stage}'
+    ISSUE_TABLE: '${self:custom.TaskExecIssueTable, env:TASK_EXEC_ISSUE_TABLE}-${self:provider.stage}'
   iam:
     role:
       statements:
