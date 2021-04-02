@@ -12,6 +12,7 @@ custom:
   resultDataBucket: ${self:custom.dotenvVars.TASK_EXEC_RESULT_DATA_BUCKET}
   updateTaskQueue: ${self:custom.dotenvVars.TASK_EXEC_UPDATE_TASK_QUEUE}
   uploadTaskIssuesQueue: ${self:custom.dotenvVars.TASK_EXEC_UPLOAD_TASK_ISSUES_QUEUE}
+  taskExecTaskTable: ${self:custom.dotenvVars.TASK_EXEC_TASK_TABLE}
   pythonRequirements:
     dockerizePip: non-linux
 
