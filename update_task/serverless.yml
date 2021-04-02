@@ -2,7 +2,6 @@ service: update-task
 variablesResolutionMode: 20210219
 frameworkVersion: ">=1.30.0"
 plugins:
-  - serverless-dotenv-plugin
   - serverless-python-requirements
 custom:
   dotenvVars: ${file(configs.js)}
