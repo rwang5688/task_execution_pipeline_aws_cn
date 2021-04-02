@@ -1,26 +1,27 @@
 service: update-task
+variablesResolutionMode: 20210219
 frameworkVersion: ">=1.30.0"
 plugins:
   - serverless-dotenv-plugin
   - serverless-python-requirements
 custom:
-  accountid: ${env:AWS_ACCOUNT_ID}
-  cloud: ${env:TARGET_CLOUD}
-  region: ${env:TARGET_REGION}
-  logDataBucket: ${env:TASK_EXEC_LOG_DATA_BUCKET}
-  resultDataBucket: ${env:TASK_EXEC_RESULT_DATA_BUCKET}
-  updateTaskQueue: ${env:TASK_EXEC_UPDATE_TASK_QUEUE}
-  uploadTaskIssuesQueue: ${env:TASK_EXEC_UPLOAD_TASK_ISSUES_QUEUE}
-  dotenv:
-    path: ../.env
+  dotenvVars: ${file(configs.js)}
+  accountid: ${self:custom.dotenvVars.AWS_ACCOUNT_ID}
+  cloud: ${self:custom.dotenvVars.TARGET_CLOUD}
+  region: ${self:custom.dotenvVars.TARGET_REGION}
+  logDataBucket: ${self:custom.dotenvVars.TASK_EXEC_LOG_DATA_BUCKET}
+  resultDataBucket: ${self:custom.dotenvVars.TASK_EXEC_RESULT_DATA_BUCKET}
+  updateTaskQueue: ${self:custom.dotenvVars.TASK_EXEC_UPDATE_TASK_QUEUE}
+  uploadTaskIssuesQueue: ${self:custom.dotenvVars.TASK_EXEC_UPLOAD_TASK_ISSUES_QUEUE}
   pythonRequirements:
     dockerizePip: non-linux
 
 provider:
   name: aws
-  region: ${env:TARGET_REGION}
+  region: ${self:custom.region}
   runtime: python3.8
   stage: dev
+#environment: ${file(configs.js)}       # not working as the github example
   lambdaHashingVersion: 20201221
   iam:
     role:
@@ -66,14 +67,15 @@ functions:
     role: arn:${self:custom.cloud}:iam::${self:custom.accountid}:role/task-execution-pipeline
     tracing: true
     environment:
-      ACCOUNT_ID: ${env:AWS_ACCOUNT_ID}
-      CLOUD: ${env:TARGET_CLOUD}
-      REGION: ${env:TARGET_REGION}
-      LOG_DATA_BUCKET: ${env:TASK_EXEC_LOG_DATA_BUCKET}
-      RESULT_DATA_BUCKET: ${env:TASK_EXEC_RESULT_DATA_BUCKET}
-      UPDATE_TASK_QUEUE: ${env:TASK_EXEC_UPDATE_TASK_QUEUE}
-      UPLOAD_TASK_ISSUES_QUEUE: ${env:TASK_EXEC_UPLOAD_TASK_ISSUES_QUEUE}
-      TASK_TABLE: '${env:TASK_EXEC_TASK_TABLE}-${self:provider.stage}'
+      ACCOUNT_ID: ${self:custom.accountid, env:AWS_ACCOUNT_ID}
+      CLOUD: ${self:custom.cloud, env:TARGET_CLOUD}
+      REGION: ${self:custom.region, env:TARGET_REGION}
+      LOG_DATA_BUCKET: ${self:custom.logDataBucket, env:TASK_EXEC_LOG_DATA_BUCKET}
+      RESULT_DATA_BUCKET: ${self:custom.resultDataBucket, env:TASK_EXEC_RESULT_DATA_BUCKET}
+      UPDATE_TASK_QUEUE: ${self:custom.updateTaskQueue, env:TASK_EXEC_UPDATE_TASK_QUEUE}
+      UPLOAD_TASK_ISSUES_QUEUE: ${self:custom.uploadTaskIssuesQueue, env:TASK_EXEC_UPLOAD_TASK_ISSUES_QUEUE}
+
+      TASK_TABLE: "${self:custom.taskExecTaskTable, env:TASK_EXEC_TASK_TABLE}-${self:provider.stage}"
     events:
       - sqs:
           arn: "arn:${self:custom.cloud}:sqs:${self:provider.region}:${self:custom.accountid}:${self:custom.updateTaskQueue}"
