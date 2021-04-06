@@ -69,7 +69,7 @@ functions:
     environment:
       ACCOUNT_ID: ${self:custom.accountid, env:AWS_ACCOUNT_ID}
       CLOUD: ${self:custom.cloud, env:TARGET_CLOUD}
-      REGION: ${self:custom.region, env:TARGET_REGION}
+      TARGET_REGION: ${self:custom.region, env:TARGET_REGION}
       LOG_DATA_BUCKET: ${self:custom.logDataBucket, env:TASK_EXEC_LOG_DATA_BUCKET}
       RESULT_DATA_BUCKET: ${self:custom.resultDataBucket, env:TASK_EXEC_RESULT_DATA_BUCKET}
       UPDATE_TASK_QUEUE: ${self:custom.updateTaskQueue, env:TASK_EXEC_UPDATE_TASK_QUEUE}

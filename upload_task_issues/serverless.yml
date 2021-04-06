@@ -69,7 +69,7 @@ functions:
     role: arn:${self:custom.cloud}:iam::${self:custom.accountid}:role/task-execution-pipeline
     environment:
       ACCOUNT_ID: ${self:custom.accountid, env:AWS_ACCOUNT_ID}
-      REGION: ${self:custom.region, env:TARGET_REGION}
+      TARGET_REGION: ${self:custom.region, env:TARGET_REGION}
       LOG_DATA_BUCKET: ${self:custom.logDataBucket, env:TASK_EXEC_LOG_DATA_BUCKET}
       RESULT_DATA_BUCKET: ${self:custom.resultDataBucket, env:TASK_EXEC_RESULT_DATA_BUCKET}
       UPLOAD_TASK_ISSUES_QUEUE: ${self:custom.uploadTaskIssuesQueue, env:TASK_EXEC_UPLOAD_TASK_ISSUES_QUEUE}
