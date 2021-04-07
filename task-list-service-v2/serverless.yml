@@ -1,17 +1,18 @@
 service: task-list-service-v2
+variablesResolutionMode: 20210219
 frameworkVersion: ">=1.30.0"
 plugins:
   - serverless-offline
   - serverless-domain-manager
-  - serverless-dotenv-plugin
 custom:
-  accountid: ${env:AWS_ACCOUNT_ID}
-  cloud: ${env:TARGET_CLOUD}
-  region: ${env:TARGET_REGION}
-  domain: ${env:TASK_LIST_DOMAIN}
+  dotenvVars: ${file(configs.js)}
+  accountid: ${self:custom.dotenvVars.AWS_ACCOUNT_ID}
+  cloud: ${self:custom.dotenvVars.TARGET_CLOUD}
+  region: ${self:custom.dotenvVars.TARGET_REGION}
+  domain: ${self:custom.dotenvVars.TASK_LIST_DOMAIN}
+  taskExecTaskTable: ${self:custom.dotenvVars.TASK_EXEC_TASK_TABLE}
+  TaskExecIssueTable: ${self:custom.dotenvVars.TASK_EXEC_ISSUE_TABLE}
 #  userPoolArn: ${env:TASK_LIST_USER_POOL_ARN}
-  dotenv:
-    path: ../.env
   customDomain:
     domainName: 'tasklistapi.${self:custom.domain}'
     stage: ${self:provider.stage}
@@ -24,14 +25,14 @@ custom:
 
 provider:
   name: aws
-  region: ${env:TARGET_REGION}
+  region: ${self:custom.region}
   runtime: java8
   stage: ${opt:stage, 'dev'}
   lambdaHashingVersion: 20201221
   endpointType: regional
   environment:
-    TASK_TABLE: '${env:TASK_EXEC_TASK_TABLE}-${self:provider.stage}'
-    ISSUE_TABLE: '${env:TASK_EXEC_ISSUE_TABLE}-${self:provider.stage}'
+    TASK_TABLE: '${self:custom.taskExecTaskTable, env:TASK_EXEC_TASK_TABLE}-${self:provider.stage}'
+    ISSUE_TABLE: '${self:custom.TaskExecIssueTable, env:TASK_EXEC_ISSUE_TABLE}-${self:provider.stage}'
   iam:
     role:
       statements:

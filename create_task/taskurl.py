@@ -11,8 +11,8 @@ def get_bucket_name_from_env_var(env_var_name):
 
 def get_region_name():
     region_name = ''
-    if 'REGION' in os.environ:
-        region_name = os.environ['REGION']
+    if 'TARGET_REGION' in os.environ:
+        region_name = os.environ['TARGET_REGION']
     print('get_region_name: region_name=%s' % region_name)
     return region_name
 
