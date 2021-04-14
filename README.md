@@ -17,5 +17,5 @@ Run remove.sh to remove the task execution pipeline.
 1. If you provide the incorrect value to AWS account id in .env file, all the AWS lambda function will fail to deploy.
 Provide the correct value and run deploy.sh again.
 2. If you provide the incorrect value to ECS_XXX related variables in .env file, run ECS task will fail. 
-And messages will be blocked in process task queue. Provide the correct value and redeploy create task lambda function to make create task works work in the future.
+And messages will be blocked in process task queue. Provide the correct value and redeploy create task lambda function to make it works in the future.
 For messages that blocked in process task queue, run run_ecs_task.sh manually can consume the messages in process task queue and all later task will continue.
