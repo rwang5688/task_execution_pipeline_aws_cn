@@ -2,10 +2,16 @@ import os
 import subprocess
 import time
 
+from aws_xray_sdk.core import xray_recorder
+from aws_xray_sdk.core import patch_all
+
 import cachefile
 import taskfile
 import taskjson
 import taskmessage
+
+xray_recorder.configure(context_missing='LOG_ERROR')
+patch_all()
 
 
 def get_env_var(env_var_name):
@@ -155,6 +161,7 @@ def execute_task_callback(task_callback):
 
 
 def main():
+    xray_recorder.begin_segment('process task')
     print("process task starts at %s" % time.asctime())
     process_task_start = time.time()
     print('\nStarting process_task.py ...')
@@ -204,6 +211,7 @@ def main():
 
     print('set_env_vars: %s' % os.environ)
 
+    xray_recorder.begin_subsegment('execute %s' % task["task_tool"])
     print("execute_task_tool starts at %s" % time.asctime())
     scan_start = time.time()
     success = execute_task_tool(task)
@@ -211,6 +219,7 @@ def main():
         print('execute_task_tool failed.')
     scan_end = time.time()
     print("execute_task_tool ends at %s, it takes %s seconds" % (time.asctime(), scan_end - scan_start))
+    xray_recorder.end_subsegment()
 
     task_tool = task["task_tool"]
     task_status = task["task_status"]
@@ -224,11 +233,13 @@ def main():
     print('write_task_json completed for task_tool=%s with task_status=%s.' % (task_tool, task_status))
 
     task_callback = 'task_result.py'
+    xray_recorder.begin_subsegment('execute %s' % task_callback)
     success = execute_task_callback(task_callback)
     if not success:
         print('execute_task_callback failed.')
 
     print('execute_task_callback completed for %s.' % task_callback)
+    xray_recorder.end_subsegment()
 
     success = taskmessage.delete_task_message(process_task_queue_name, message)
     if not success:
@@ -240,8 +251,8 @@ def main():
     print(message)
     process_task_end = time.time()
     print("process task ends at %s, it takes %s seconds" % (time.asctime(), process_task_end - process_task_start))
+    xray_recorder.end_segment()
 
 
 if __name__ == '__main__':
     main()
-
